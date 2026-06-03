@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Максим Лисевский — Руководитель отдела продаж</title>
+<meta name="description" content="Максим Лисевский — руководитель отдела продаж и Senior Manager. Закрытие сделок в одно касание, аналитика на цифрах, собственная AI-инфраструктура." />
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@5/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist-mono@5/index.css" />
+
+<style>
+/* ============ TOKENS — warm earth palette (adapted to portrait) ============ */
+:root{
+  --bg-deep:#020201;
+  --bg-base:#050504;
+  --bg-surface:#100F0D;
+  --bg-surface-2:#181612;
+  --border-subtle:#221F1B;
+  --border-soft:#2D2924;
+
+  --text-primary:#F2EFE6;
+  --text-muted:#8C8576;
+  --text-dim:#56514A;
+
+  --accent:#E8D9A8;          /* White Gold — флагманский премиум-оттенок */
+  --accent-strong:#C9B27E;
+  --accent-muted:rgba(232,217,168,0.14);
+  --accent-glow:rgba(232,217,168,0.45);
+  --accent-rgb:232,217,168;
+  --gold-soft:rgba(232,217,168,0.10); /* вторичное свечение (бывш. оливковый) */
+
+  --font-display:'Geist Variable','Inter',system-ui,sans-serif;
+  --font-body:'Geist Variable','Inter',system-ui,sans-serif;
+  --font-mono:'Geist Mono Variable',ui-monospace,'Cascadia Code',monospace;
+
+  --tracking-display:-0.04em;
+  --tracking-tight:-0.03em;
+  --tracking-overline:0.10em;
+
+  --radius-card:14px;
+  --radius-pill:100px;
+  --radius-mock:20px;
+
+  --maxw-wide:1320px;
+  --maxw-mid:1100px;
+  --maxw-text:760px;
+  --maxw-narrow:560px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-base);color:var(--text-primary);
+  font-family:var(--font-body);font-weight:400;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent-muted);color:var(--text-primary)}
+
+/* ============ NETWORK CANVAS (AI ↔ sales connections) ============ */
+#net{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+
+/* ============ ENTRANCE FROM DEPTH ============ */
+@keyframes emerge{0%{opacity:0;transform:translateY(26px) scale(.94);filter:blur(8px)}
+  100%{opacity:1;transform:none;filter:none}}
+@keyframes emergePhoto{0%{opacity:0;transform:perspective(1100px) translateZ(-340px) scale(.86);filter:blur(13px)}
+  100%{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:no-preference){
+  .hero-text .eyebrow{animation:emerge .85s .05s both cubic-bezier(.2,.7,.2,1)}
+  .hero-text h1{animation:emerge .95s .16s both cubic-bezier(.2,.7,.2,1)}
+  .hero-text .lead{animation:emerge 1s .30s both cubic-bezier(.2,.7,.2,1)}
+  .hero-text .hero-cta{animation:emerge 1s .44s both cubic-bezier(.2,.7,.2,1)}
+  .hero-text .hero-tags{animation:emerge 1s .56s both cubic-bezier(.2,.7,.2,1)}
+  .photo-card{animation:emergePhoto 1.15s .22s both cubic-bezier(.2,.7,.2,1)}
+  .scrolldown{animation:emerge 1s .9s both}
+}
+
+/* ============ FILM GRAIN ============ */
+.grain{position:fixed;inset:0;z-index:100;pointer-events:none;opacity:0.15;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ============ SCROLL PROGRESS ============ */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--accent-strong),var(--accent));
+  box-shadow:0 0 12px var(--accent-glow)}
+
+/* ============ LAYOUT ============ */
+.wrap{max-width:var(--maxw-wide);margin:0 auto;padding:0 40px}
+.section{padding:120px 0;position:relative}
+.section-head{max-width:var(--maxw-text);margin:0 auto 60px}
+.section-head.center{text-align:center}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;
+  letter-spacing:var(--tracking-overline);color:var(--accent);margin-bottom:18px}
+.eyebrow.muted{color:var(--text-muted)}
+h2{font-family:var(--font-display);font-size:clamp(26px,3.4vw,34px);font-weight:800;
+  letter-spacing:var(--tracking-tight);line-height:1.08}
+.lead{color:var(--text-muted);font-size:16px;margin-top:16px;line-height:1.65}
+.divider{height:1px;border:0;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.10) 50%,transparent);
+  max-width:var(--maxw-wide);margin:0 auto}
+
+/* ============ NAV ============ */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:20px 40px;transition:padding .3s,background .3s,border-color .3s;border-bottom:1px solid transparent}
+nav.scrolled{padding:13px 40px;background:rgba(18,17,16,0.72);backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border-subtle)}
+.brand{font-family:var(--font-display);font-weight:800;font-size:17px;letter-spacing:-0.02em;
+  display:flex;align-items:center;gap:10px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent-glow)}
+.nav-links{display:flex;gap:28px;position:absolute;left:50%;transform:translateX(-50%)}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text-primary)}
+.nav-actions{display:flex;align-items:center;gap:10px}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--font-body);
+  font-size:14px;font-weight:600;border-radius:var(--radius-pill);padding:0 20px;height:46px;
+  border:1px solid transparent;transition:transform .18s,background .2s,box-shadow .25s,border-color .2s;white-space:nowrap}
+.btn svg{width:17px;height:17px;flex:none}
+.btn-primary{position:relative;overflow:hidden;background:var(--accent);color:#1c1608;font-weight:700;
+  box-shadow:0 10px 26px rgba(var(--accent-rgb),0.28),0 0 32px rgba(var(--accent-rgb),0.20),
+    0 0 0 1px #ffffff1f inset,0 1px #ffffff66 inset}
+.btn-primary::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,0.55) 50%,transparent 100%);
+  transform:translateX(-120%);transition:transform .8s ease}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-primary:hover::before{transform:translateX(120%)}
+.btn-icon{height:46px;width:46px;padding:0;justify-content:center;background:transparent;
+  border:1px solid var(--border-soft);color:var(--text-primary)}
+.btn-icon:hover{background:var(--bg-surface-2);border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-sm{height:42px;padding:0 16px}
+.btn-secondary{background:transparent;color:var(--text-primary);border:1px solid var(--border-soft)}
+.btn-secondary:hover{background:var(--bg-surface-2);transform:translateY(-2px);border-color:var(--accent)}
+.ghost{display:inline-flex;align-items:center;gap:7px;color:var(--text-muted);font-size:14px;font-weight:500;
+  transition:color .2s;cursor:pointer}
+.ghost svg{width:16px;height:16px;transition:transform .2s}
+.ghost:hover{color:var(--text-primary)}.ghost:hover svg{transform:translateX(3px)}
+
+/* ============ HERO ============ */
+.hero{position:relative;padding:170px 0 90px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-bg .blob{position:absolute;border-radius:50%;filter:blur(20px);opacity:.9}
+.hero-bg .b1{top:-120px;right:-4%;width:780px;height:780px;
+  background:radial-gradient(circle,rgba(var(--accent-rgb),0.16) 0%,transparent 60%);animation:drift1 16s ease-in-out infinite}
+.hero-bg .b2{top:240px;left:-12%;width:620px;height:620px;
+  background:radial-gradient(circle,var(--gold-soft) 0%,transparent 65%);animation:drift2 20s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-30px)}}
+.hero-cursor{position:absolute;width:520px;height:520px;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(var(--accent-rgb),0.10) 0%,transparent 60%);
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .4s}
+
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr 0.95fr;
+  gap:64px;align-items:center}
+.hero h1{font-family:var(--font-display);margin:20px 0 0;line-height:1.06}
+.hero h1 .h1-role{display:block;font-weight:600;font-size:clamp(15px,1.7vw,19px);
+  color:var(--text-muted);letter-spacing:0.01em;margin-bottom:10px}
+.hero h1 .h1-main{display:block;font-weight:800;font-size:clamp(34px,4.6vw,56px);
+  letter-spacing:var(--tracking-display);color:var(--accent)}
+.hero .lead{max-width:560px;font-size:16.5px;margin-top:24px}
+.hero-cta{display:flex;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
+.hero-tags{display:flex;gap:10px;margin-top:38px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:600;color:var(--text-muted);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-pill);padding:8px 14px;background:rgba(255,255,255,0.02);
+  display:inline-flex;align-items:center;gap:8px}
+.tag .tdot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* portrait */
+.photo-stage{perspective:1100px;display:flex;justify-content:center}
+.photo-card{position:relative;width:100%;max-width:380px;border-radius:var(--radius-mock);
+  transform-style:preserve-3d;transition:transform .25s ease;will-change:transform}
+.photo-card .halo{position:absolute;inset:-30px;border-radius:32px;z-index:0;
+  background:radial-gradient(circle at 60% 40%,rgba(var(--accent-rgb),0.30),transparent 65%);filter:blur(20px)}
+.photo-card .frame{position:relative;z-index:1;border-radius:var(--radius-mock);overflow:hidden;
+  border:1px solid var(--border-soft);box-shadow:0 50px 120px #000000bf,inset 0 1px #ffffff14}
+.photo-card img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;
+  filter:saturate(1.02) contrast(1.02)}
+.photo-card .frame::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,0.06),transparent 40%),
+            linear-gradient(0deg,rgba(11,10,8,0.55),transparent 38%)}
+.photo-plate{position:absolute;left:16px;bottom:16px;z-index:2;
+  display:flex;flex-direction:column;gap:3px;transform:translateZ(40px)}
+.photo-plate .pn{font-family:var(--font-display);font-weight:700;font-size:14px;color:#fff;
+  text-shadow:0 1px 8px #000}
+.photo-plate .pr{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);
+  text-shadow:0 1px 8px #000}
+.scrolldown{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-dim);font-size:10.5px;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.14em}
+.scrolldown .mouse{width:22px;height:34px;border:1.5px solid var(--border-soft);border-radius:12px;position:relative}
+.scrolldown .mouse::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:6px;border-radius:2px;
+  background:var(--accent);transform:translateX(-50%);animation:wheel 1.6s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}100%{opacity:0;transform:translate(-50%,9px)}}
+
+/* ============ MARQUEE ============ */
+.marquee{border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+  padding:18px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee-track{display:flex;gap:48px;width:max-content;animation:scrollx 32s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--text-muted);
+  display:inline-flex;align-items:center;gap:48px;letter-spacing:-0.01em;white-space:nowrap}
+.marquee span::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.7}
+@keyframes scrollx{to{transform:translateX(-50%)}}
+
+/* ============ METRICS ============ */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.metric{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);
+  padding:28px 24px;position:relative;overflow:hidden;transition:transform .2s,background .2s,box-shadow .25s}
+.metric::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(145deg,rgba(255,255,255,0.04),transparent 46%)}
+.metric:hover{transform:translateY(-3px);background:var(--bg-surface-2);
+  box-shadow:0 0 30px var(--accent-muted),0 12px 32px #00000073,inset 0 1px #ffffff14}
+.metric .label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:var(--tracking-overline);
+  color:var(--text-muted);margin-bottom:16px}
+.metric .num{font-family:var(--font-mono);font-weight:700;font-size:clamp(24px,2.7vw,32px);
+  letter-spacing:-0.02em;color:var(--text-primary);line-height:1}
+.metric .num .cur{color:var(--accent);font-size:0.7em;margin-left:4px}
+.metric .sub{font-size:12.5px;color:var(--text-muted);margin-top:12px;line-height:1.45}
+
+/* ============ FEATURE GRID ============ */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:var(--maxw-mid);margin:0 auto}
+.card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);
+  padding:30px;position:relative;overflow:hidden;transition:transform .2s,background .2s,box-shadow .25s}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(145deg,rgba(255,255,255,0.03),transparent 44%)}
+.card:hover{transform:translateY(-3px);background:var(--bg-surface-2);box-shadow:0 12px 32px #00000073,inset 0 1px #ffffff0d}
+.icon-tile{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(145deg,rgba(255,255,255,0.06),transparent 60%);
+  border:1px solid var(--border-subtle);box-shadow:inset 0 1px #ffffff0d;margin-bottom:22px}
+.icon-tile svg{width:23px;height:23px;color:var(--accent);stroke-width:2.3;fill:none;stroke:currentColor;
+  stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.01em;margin-bottom:10px}
+.card p{font-size:14px;color:var(--text-muted);line-height:1.6}
+
+/* ============ EXPERIENCE ============ */
+.exp{max-width:var(--maxw-text);margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.exp-item{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);
+  padding:32px;position:relative;overflow:hidden;transition:transform .2s,background .2s,box-shadow .25s}
+.exp-item::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(145deg,rgba(255,255,255,0.03),transparent 44%)}
+.exp-item:hover{transform:translateY(-2px);background:var(--bg-surface-2);box-shadow:0 12px 32px #00000073,inset 0 1px #ffffff0d}
+.exp-top{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+.exp-role{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-0.01em}
+.exp-date{font-family:var(--font-mono);font-size:12.5px;font-weight:700;color:var(--accent);white-space:nowrap}
+.exp-org{font-size:13px;color:var(--text-muted);margin-top:5px}
+.exp-list{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px}
+.exp-list li{font-size:14.5px;color:var(--text-muted);line-height:1.6;padding-left:22px;position:relative}
+.exp-list li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;
+  border:1.5px solid var(--accent);border-radius:50%}
+.exp-list li b{color:var(--text-primary);font-weight:700}
+.result-band{margin-top:22px;padding-top:22px;border-top:1px solid var(--border-subtle);
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.result-band .r .rn{font-family:var(--font-mono);font-weight:700;font-size:17px;color:var(--accent)}
+.result-band .r .rl{font-size:11.5px;color:var(--text-muted);margin-top:5px;line-height:1.4}
+.note{font-size:12.5px;color:var(--text-dim);margin-top:16px;font-style:italic}
+
+/* ============ AI ============ */
+.ai-lead{max-width:var(--maxw-text);margin:0 auto 46px;text-align:center;font-size:16px;color:var(--text-muted)}
+.ai-lead b{color:var(--text-primary);font-weight:700}
+.ai-footnote{text-align:center;color:var(--text-muted);font-size:14px;margin-top:42px}
+.ai-footnote b{color:var(--accent);font-weight:600}
+
+/* ============ EDUCATION ============ */
+.edu{max-width:var(--maxw-narrow);margin:0 auto;text-align:center;background:var(--bg-surface);
+  border:1px solid var(--border-subtle);border-radius:var(--radius-card);padding:34px}
+.edu .y{font-family:var(--font-mono);font-weight:700;color:var(--accent);font-size:13px}
+.edu h3{font-family:var(--font-display);font-size:18px;font-weight:700;margin:8px 0 6px}
+.edu p{font-size:13.5px;color:var(--text-muted)}
+
+/* ============ FOOTER ============ */
+.footer{padding:120px 0 70px;text-align:center;position:relative;overflow:hidden}
+.footer-glow{position:absolute;left:50%;top:0;transform:translateX(-50%);width:900px;height:500px;pointer-events:none;
+  background:radial-gradient(ellipse at center top,rgba(var(--accent-rgb),0.12) 0%,transparent 65%)}
+.footer-inner{position:relative;z-index:2;max-width:var(--maxw-text);margin:0 auto}
+.footer h2{font-size:clamp(28px,4.4vw,42px)}
+.footer .lead{margin:18px auto 38px;max-width:520px}
+.footer-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.contacts{margin-top:52px;display:flex;gap:32px;justify-content:center;flex-wrap:wrap;color:var(--text-muted);font-size:13.5px}
+.contacts a{display:inline-flex;align-items:center;gap:9px;transition:color .2s}
+.contacts a:hover{color:var(--text-primary)}
+.contacts svg{width:16px;height:16px;color:var(--accent);stroke-width:2.2;fill:none;stroke:currentColor;
+  stroke-linecap:round;stroke-linejoin:round}
+.copyright{margin-top:56px;color:var(--text-dim);font-size:12px;border-top:1px solid var(--border-subtle);padding-top:30px}
+
+/* ============ REVEAL ============ */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.stagger>*{opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1)}
+.stagger.in>*{opacity:1;transform:none}
+.stagger.in>*:nth-child(2){transition-delay:.07s}
+.stagger.in>*:nth-child(3){transition-delay:.14s}
+.stagger.in>*:nth-child(4){transition-delay:.21s}
+.stagger.in>*:nth-child(5){transition-delay:.28s}
+.stagger.in>*:nth-child(6){transition-delay:.35s}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.stagger>*{opacity:1!important;transform:none!important;transition:none}
+  .hero-bg .blob,.marquee-track,.scrolldown .mouse::after{animation:none}
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1140px){.hero-grid{gap:48px}.wrap{padding:0 32px}}
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:44px;text-align:center}
+  .hero-text .eyebrow{margin-top:0}
+  .hero .lead{margin-left:auto;margin-right:auto}
+  .hero-cta,.hero-tags{justify-content:center}
+  .photo-stage{order:-1}
+  .photo-card{max-width:300px}
+  .section-head{text-align:center}
+  .nav-links{display:none}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .wrap{padding:0 24px}nav{padding:16px 24px}
+  .brand span.full{display:none}
+}
+@media (max-width:600px){
+  .metrics,.grid-3,.result-band{grid-template-columns:1fr}
+  .result-band{gap:18px}.section{padding:80px 0}.hero{padding:124px 0 64px}
+  .exp-item,.card{padding:24px}
+  .nav-actions .label-hide{display:none}
+  .exp-top{flex-direction:column;gap:6px}
+  .exp-date{order:-1}
+  .hero-cta{flex-direction:column;align-items:center;gap:16px}
+  .hero-cta .btn{width:100%;justify-content:center}
+  .footer-cta{flex-direction:column}.footer-cta .btn{width:100%;justify-content:center}
+  .contacts{flex-direction:column;gap:14px;align-items:center}
+}
+@media (max-width:380px){
+  .wrap{padding:0 18px}
+  .btn{font-size:13px}
+  h2{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="grain"></div>
+<div class="progress" id="progress"></div>
+
+<!-- ============ NAV ============ -->
+<nav id="nav">
+  <div class="brand"><span class="dot"></span><span class="full">Максим&nbsp;Лисевский</span></div>
+  <div class="nav-links">
+    <a href="#experience" data-link>Опыт</a>
+    <a href="#metrics" data-link>Результаты</a>
+    <a href="#ai" data-link>AI</a>
+    <a href="#contact" data-link>Контакт</a>
+  </div>
+  <div class="nav-actions">
+    <a class="btn btn-icon" href="https://t.me/Maximpact888" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram: @Maximpact888">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 4.5 2.5 12l6 2.5L18 7l-7 9 7.5 3.5z"/></svg>
+    </a>
+    <a class="btn btn-primary btn-sm magnetic" href="mailto:mgromov688@gmail.com">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      <span class="label-hide">Написать</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero-bg">
+    <span class="blob b1"></span><span class="blob b2"></span>
+  </div>
+  <div class="hero-cursor" id="cursorGlow"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Онлайн-образование · Маркетплейсы WB / OZON</span>
+        <h1><span class="h1-role">Руководитель отдела продаж</span><span class="h1-main">Senior Manager</span></h1>
+        <p class="lead">Sales и операционный руководитель в онлайн-образовании и на маркетплейсах WB и OZON. Когда РОП уходит — беру отдел на себя: план, выручка и команда остаются на месте. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary magnetic" href="mailto:mgromov688@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Написать на почту
+          </a>
+          <a class="ghost" href="https://t.me/Maximpact888" target="_blank" rel="noopener">
+            Telegram @Maximpact888
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="hero-tags">
+          <span class="tag"><span class="tdot"></span>Закрытие в одно касание</span>
+          <span class="tag"><span class="tdot"></span>amoCRM · аналитика воронки</span>
+          <span class="tag"><span class="tdot"></span>Продвинутый пользователь Claude</span>
+        </div>
+      </div>
+      <div class="photo-stage">
+        <div class="photo-card" id="photoCard">
+          <div class="halo"></div>
+          <div class="frame">
+            <img src="photo.png" alt="Максим Лисевский" />
+          </div>
+          <div class="photo-plate">
+            <div class="pn">Максим Лисевский</div>
+            <div class="pr">Sales · AI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scrolldown"><span class="mouse"></span>Листай</div>
+</header>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Закрытие в одно касание</span><span>Замещение РОПа</span><span>amoCRM</span>
+    <span>Аналитика воронки</span><span>Zoom-встречи</span><span>WB / OZON</span>
+    <span>AI-автоматизация</span><span>Notion</span><span>Python</span><span>Адаптация менеджеров</span>
+    <span>Закрытие в одно касание</span><span>Замещение РОПа</span><span>amoCRM</span>
+    <span>Аналитика воронки</span><span>Zoom-встречи</span><span>WB / OZON</span>
+    <span>AI-автоматизация</span><span>Notion</span><span>Python</span><span>Адаптация менеджеров</span>
+  </div>
+</div>
+
+<!-- ============ METRICS ============ -->
+<section class="section" id="metrics">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow muted">Результаты по факту в системе отдела</span>
+      <h2>Результаты</h2>
+      <p class="lead">Контур обучения селлеров WB / OZON (С. Сытин), сезон 2025.</p>
+    </div>
+    <div class="metrics stagger">
+      <div class="metric">
+        <div class="label">Ноябрь 2025</div>
+        <div class="num" data-count="2447213"><span class="cur">₽</span></div>
+        <div class="sub">2 447 213 ₽ — первое место в отделе</div>
+      </div>
+      <div class="metric">
+        <div class="label">Сезон окт–дек 2025</div>
+        <div class="num" data-count="5198953"><span class="cur">₽</span></div>
+        <div class="sub">Суммарная выручка за квартал</div>
+      </div>
+      <div class="metric">
+        <div class="label">Максимальная сделка</div>
+        <div class="num" data-count="387700"><span class="cur">₽</span></div>
+        <div class="sub">Средний чек 130–290 тыс. ₽</div>
+      </div>
+      <div class="metric">
+        <div class="label">Школа «IT компот»</div>
+        <div class="num">15–25<span class="cur">%</span></div>
+        <div class="sub">Конверсия пробного урока в оплату, стабильно</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ============ STRONG SIDES ============ -->
+<section class="section" id="strengths">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow muted">Профиль</span>
+      <h2>Сильные стороны</h2>
+    </div>
+    <div class="grid-3 stagger">
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <h3>Закрытие в одно касание</h3>
+        <p>Клиент доходит до оплаты за первый контакт, без растянутого дожима. Основная отличительная черта.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>Короткий цикл сделки</h3>
+        <p>Работаю без входящих заявок — на холодном и тёплом трафике, с быстрым выходом на оплату.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
+        <h3>Продажи в Zoom</h3>
+        <p>Большой опыт продающих и презентационных встреч: выявление потребности и доведение до решения онлайн.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Замещение РОПа · тим-лид</h3>
+        <p>На постоянной основе беру управление: удержание плана и выручки, целевые действия команды, адаптация менеджеров.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16l4-5 4 3 5-7"/></svg></div>
+        <h3>Аналитика воронки и amoCRM</h3>
+        <p>Веду отдел по цифрам: вижу, где теряются деньги и где точки роста, и перевожу это в решения.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
+        <h3>Таблицы и отчётность через AI</h3>
+        <p>Строю и настраиваю аналитические таблицы и логику расчётов с помощью AI — корректно под реальные процессы.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ============ EXPERIENCE ============ -->
+<section class="section" id="experience">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow muted">Карьера</span>
+      <h2>Опыт работы</h2>
+    </div>
+    <div class="exp">
+
+      <article class="exp-item reveal">
+        <div class="exp-top">
+          <div>
+            <div class="exp-role">Менеджер по продажам</div>
+            <div class="exp-org">Школа программирования «IT компот»</div>
+          </div>
+          <div class="exp-date">2024 — наст. время</div>
+        </div>
+        <ul class="exp-list">
+          <li>Конвертирую тёплый трафик пробных уроков в оплату на холодно-тёплой аудитории <b>без входящих заявок</b>.</li>
+          <li>Закрытия в одно касание; стабильно в <b>топ-1–2 по обороту</b> в отделе.</li>
+          <li>Презентация по модели «цена урока × количество уроков», выявление потребности.</li>
+          <li>Вёл онбординг новых сотрудников; участвовал в процессах школы вне продаж — подбор персонала и обучение педагогов продающей части.</li>
+        </ul>
+        <div class="result-band">
+          <div class="r"><div class="rn">15–25%</div><div class="rl">Конверсия пробного в оплату</div></div>
+          <div class="r"><div class="rn">Топ-1–2</div><div class="rl">По обороту в отделе</div></div>
+          <div class="r"><div class="rn">Онбординг</div><div class="rl">Подбор и обучение</div></div>
+        </div>
+      </article>
+
+      <article class="exp-item reveal">
+        <div class="exp-top">
+          <div>
+            <div class="exp-role">Менеджер по продажам, и.о. РОП</div>
+            <div class="exp-org">Контур обучения селлеров WB / OZON (С. Сытин)</div>
+          </div>
+          <div class="exp-date">осень 2025 — весна 2026</div>
+        </div>
+        <ul class="exp-list">
+          <li>Вёл дорогие сделки в оплату через <b>amoCRM</b>, отвечал за аналитику отдела и инструменты для менеджеров.</li>
+          <li>Замещал РОПа: держал план и выручку, ставил команде целевые действия по цифрам, согласовывал воронки с маркетингом, формировал офферы.</li>
+          <li>Вёл адаптацию менеджеров и помогал им закрывать сделки.</li>
+        </ul>
+        <div class="result-band">
+          <div class="r"><div class="rn">2 447 213 ₽</div><div class="rl">Ноябрь 2025 · 1 место в отделе</div></div>
+          <div class="r"><div class="rn">5 198 953 ₽</div><div class="rl">Сезон октябрь–декабрь 2025</div></div>
+          <div class="r"><div class="rn">387 700 ₽</div><div class="rl">Максимальная сделка</div></div>
+        </div>
+        <div class="note">Январь–февраль 2026 — в отпуске.</div>
+      </article>
+
+      <article class="exp-item reveal">
+        <div class="exp-top">
+          <div>
+            <div class="exp-role">Руководитель отдела продаж</div>
+            <div class="exp-org">GOtoTOP</div>
+          </div>
+          <div class="exp-date">07.2024 — 11.2024</div>
+        </div>
+        <ul class="exp-list">
+          <li>Продажа услуг внешнего трафика и продвижения на маркетплейсах <b>WB и OZON</b>.</li>
+          <li>Запускал направление на холодном трафике: раскачивали с командой с нуля, продавал лично.</li>
+          <li>Управление отделом, переговоры, презентации, работа с CRM, продажи в звонках и мессенджерах.</li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ============ AI ============ -->
+<section class="section" id="ai">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow muted">Технические навыки</span>
+      <h2>AI и автоматизация</h2>
+    </div>
+    <p class="ai-lead reveal">То, что собираю для себя, <b>переношу в работу компаний</b>. Продвинутый пользователь Claude: проектирую рабочие инструменты и интегрирую их прямо в продажи — аналитика, отчётность, автоматизация рутины.</p>
+    <div class="grid-3 stagger">
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="9" y="14" width="6" height="6" rx="1"/><path d="M7 10v2a2 2 0 0 0 2 2h0M17 10v2a2 2 0 0 1-2 2h0"/></svg></div>
+        <h3>Мульти-агентные AI-системы</h3>
+        <p>Набор автономных ассистентов на Python под рабочие контуры — продажи, финансы, аналитика. У каждого своя роль, память и логика; единая база знаний в Notion как источник истины, авто-синхронизация, ночное обновление, защита от сбоев. Работает в фоне без ручного вмешательства.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="11" width="3" height="6" rx="1"/><rect x="13" y="7" width="3" height="10" rx="1"/><path d="m17 5 3-2"/></svg></div>
+        <h3>Аналитика продаж на AI</h3>
+        <p>Строю и настраиваю таблицы воронки, плана, среднего чека и разбора звонков. Логику расчётов и формулы выстраиваю корректно под реальные процессы — отдел управляется по цифрам.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></div>
+        <h3>Системы учёта и отчётности</h3>
+        <p>Проектирую по принципам чистой архитектуры: автоматический расчёт показателей, контроль целостности данных, синхронизация и прозрачная картина в реальном времени.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Сайты и лендинги</h3>
+        <p>Собираю посадочные страницы и сайты через Lovable с ручной доработкой кода — под конкретные задачи бизнеса.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg></div>
+        <h3>Контент на AI</h3>
+        <p>Настраиваю производство видео на AI-аватарах и автоматический сбор заявок под воронку.</p>
+      </div>
+      <div class="card">
+        <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></div>
+        <h3>Применение в продажах</h3>
+        <p>Навыки не лежат отдельной строкой — они уже работают в моих продажах: ускоряют рутину, дают видимость по цифрам и снимают нагрузку с команды.</p>
+      </div>
+    </div>
+    <p class="ai-footnote reveal">Каждый день осваиваю новые AI-автоматизации и довожу их <b>до рабочего инструмента</b>.</p>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ============ EDUCATION ============ -->
+<section class="section" id="education">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow muted">Образование</span>
+      <h2>База</h2>
+    </div>
+    <div class="edu reveal">
+      <div class="y">2018 — 2022</div>
+      <h3>МИПП — Менеджмент</h3>
+      <p>Курсы и тренинги по продажам и управлению.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="contact">
+  <div class="footer-glow"></div>
+  <div class="wrap">
+    <div class="footer-inner reveal">
+      <span class="eyebrow muted">Контакты</span>
+      <h2>Давайте поговорим о деньгах</h2>
+      <p class="lead">Продажи, выстроенные на цифрах, и собственная AI-инфраструктура под рукой.</p>
+      <div class="footer-cta">
+        <a class="btn btn-primary magnetic" href="mailto:mgromov688@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          mgromov688@gmail.com
+        </a>
+        <a class="btn btn-secondary" href="https://t.me/Maximpact888" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 4.5 2.5 12l6 2.5L18 7l-7 9 7.5 3.5z"/></svg>
+          @Maximpact888
+        </a>
+      </div>
+      <div class="contacts">
+        <a href="mailto:mgromov688@gmail.com">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          mgromov688@gmail.com
+        </a>
+        <a href="https://t.me/Maximpact888" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M21.5 4.5 2.5 12l6 2.5L18 7l-7 9 7.5 3.5z"/></svg>
+          Telegram: @Maximpact888
+        </a>
+      </div>
+      <div class="copyright">Максим Лисевский · Руководитель отдела продаж и Senior Manager</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ===== Animated network background (AI ↔ sales connections) ===== */
+(function(){
+  const cv=document.getElementById('net');if(!cv)return;
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const ctx=cv.getContext('2d');
+  let W,H,DPR,nodes=[],raf=null;
+  const mouse={x:-9999,y:-9999};
+  const ACCENT=[232,217,168];
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    W=cv.width=Math.floor(innerWidth*DPR);H=cv.height=Math.floor(innerHeight*DPR);
+    cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+    const area=innerWidth*innerHeight;
+    let count=Math.round(area/16000);
+    count=Math.max(28,Math.min(count,innerWidth<700?42:90));
+    nodes=[];
+    for(let i=0;i<count;i++){
+      nodes.push({x:Math.random()*W,y:Math.random()*H,
+        vx:(Math.random()-.5)*0.18*DPR,vy:(Math.random()-.5)*0.18*DPR,
+        r:(Math.random()*1.6+0.8)*DPR});
+    }
+  }
+  const LINK=140;
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    const link=LINK*DPR, mr=170*DPR;
+    for(const n of nodes){
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;
+      if(n.y<0||n.y>H)n.vy*=-1;
+    }
+    // links
+    for(let i=0;i<nodes.length;i++){
+      const a=nodes[i];
+      for(let j=i+1;j<nodes.length;j++){
+        const b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy);
+        if(d<link){
+          const o=(1-d/link)*0.16;
+          ctx.strokeStyle=`rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${o})`;
+          ctx.lineWidth=DPR*0.6;
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        }
+      }
+    }
+    // nodes + cursor connections (the "связь")
+    for(const n of nodes){
+      const mdx=n.x-mouse.x,mdy=n.y-mouse.y,md=Math.hypot(mdx,mdy);
+      let near=md<mr;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,6.283);
+      ctx.fillStyle=`rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${near?0.85:0.45})`;
+      ctx.fill();
+      if(near){
+        const o=(1-md/mr)*0.5;
+        ctx.strokeStyle=`rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${o})`;
+        ctx.lineWidth=DPR*0.7;
+        ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();
+      }
+    }
+    raf=requestAnimationFrame(frame);
+  }
+  function start(){if(!raf&&!reduce)raf=requestAnimationFrame(frame);}
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}}
+  window.addEventListener('mousemove',e=>{mouse.x=e.clientX*DPR;mouse.y=e.clientY*DPR;});
+  window.addEventListener('mouseout',()=>{mouse.x=mouse.y=-9999;});
+  window.addEventListener('resize',resize,{passive:true});
+  document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
+  resize();
+  if(reduce){frame();/* one static frame */}else start();
+})();
+
+/* ===== Nav scroll state + progress bar ===== */
+const nav=document.getElementById('nav'),progress=document.getElementById('progress');
+function onScroll(){
+  nav.classList.toggle('scrolled',window.scrollY>24);
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(h>0?(window.scrollY/h)*100:0)+'%';
+}
+onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+
+/* ===== Reveal on scroll ===== */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+  {threshold:0.15,rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
+
+/* ===== Count-up metrics ===== */
+const fmt=n=>n.toLocaleString('ru-RU').replace(/,/g,' ');
+const cio=new IntersectionObserver((es)=>{es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  const el=e.target,target=+el.dataset.count,dur=1500,start=performance.now();
+  el.insertBefore(document.createTextNode('0'),el.firstChild);
+  const tick=now=>{const p=Math.min((now-start)/dur,1),eased=1-Math.pow(1-p,3);
+    el.firstChild.textContent=fmt(Math.round(target*eased));
+    if(p<1)requestAnimationFrame(tick);else el.firstChild.textContent=fmt(target);};
+  requestAnimationFrame(tick);cio.unobserve(el);
+});},{threshold:0.5});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* ===== Hero cursor glow ===== */
+const glow=document.getElementById('cursorGlow'),hero=document.querySelector('.hero');
+hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();
+  glow.style.left=(e.clientX-r.left)+'px';glow.style.top=(e.clientY-r.top)+'px';glow.style.opacity='1';});
+hero.addEventListener('pointerleave',()=>glow.style.opacity='0');
+
+/* ===== Portrait parallax tilt ===== */
+const card=document.getElementById('photoCard');
+if(card&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  const stage=card.parentElement;
+  stage.addEventListener('pointermove',e=>{
+    const r=card.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width-0.5,py=(e.clientY-r.top)/r.height-0.5;
+    card.style.transform=`rotateY(${px*9}deg) rotateX(${-py*9}deg) translateZ(0)`;
+  });
+  stage.addEventListener('pointerleave',()=>{card.style.transform='rotateY(0) rotateX(0)';});
+}
+
+/* ===== Magnetic buttons ===== */
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  document.querySelectorAll('.magnetic').forEach(btn=>{
+    btn.addEventListener('pointermove',e=>{const r=btn.getBoundingClientRect();
+      const x=(e.clientX-r.left-r.width/2)*0.25,y=(e.clientY-r.top-r.height/2)*0.3;
+      btn.style.transform=`translate(${x}px,${y-2}px)`;});
+    btn.addEventListener('pointerleave',()=>btn.style.transform='');
+  });
+}
+
+/* ===== Active nav link ===== */
+const links=[...document.querySelectorAll('[data-link]')];
+const map=links.map(a=>({a,sec:document.querySelector(a.getAttribute('href'))})).filter(x=>x.sec);
+const sio=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){
+  links.forEach(l=>l.classList.remove('active'));
+  const m=map.find(x=>x.sec===e.target);if(m)m.a.classList.add('active');}});},{threshold:0.4});
+map.forEach(x=>sio.observe(x.sec));
+</script>
+
+</body>
+</html>
