@@ -63,9 +63,8 @@ a{color:inherit;text-decoration:none}
 /* ============ NETWORK CANVAS (AI ↔ sales connections) ============ */
 #net{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
 
-/* ============ AI GOLD-PARTICLE FILM (4K image-sequence, scroll-scrubbed) ============ */
-#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;
-  background:#000 url("assets/seq-poster.jpg?v=6") center/cover no-repeat}
+/* ============ AI NEURAL FLYTHROUGH (Three.js WebGL, real-time, scroll-driven) ============ */
+#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;background:#050407}
 .cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:linear-gradient(180deg,rgba(5,5,4,.55) 0%,transparent 18%,transparent 80%,rgba(5,5,4,.62) 100%)}
 /* читаемость текста на ярких участках — мягкая тень текста, НЕ затемнение фона */
@@ -1030,29 +1029,60 @@ map.forEach(x=>sio.observe(x.sec));
 })();
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ===== AI GOLD-PARTICLE FILM — 4K image-sequence, ведётся скроллом.
-   ОДНА сцена, которая активно трансформируется (золотые частицы), кадр за кадром по скроллу.
-   Desktop = живая промотка; mobile / reduced-motion / no-JS = статичный постер (CSS bg на #cine). ===== */
+/* ===== AI NEURAL FLYTHROUGH — Three.js (WebGL), сцена в реальном времени:
+   камера летит сквозь минималистичную нейросеть (светящиеся узлы + золотые AI-ядра на чёрном),
+   ход камеры + смена ракурса по скроллу. Рендер в разрешении экрана → чётко (4K-уровень), не мутно.
+   Mobile = меньше частиц; нет WebGL/JS = тёмный фон. ===== */
 (function(){
-  const cv=document.getElementById('cine'); if(!cv) return;
+  const cv=document.getElementById('cine'); if(!cv||!window.THREE) return;
+  let renderer; try{ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false}); }catch(e){ return; }
   document.documentElement.classList.add('cine');
-  if(!matchMedia('(min-width:981px)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const N=70,PAD=3,V='6',ctx=cv.getContext('2d',{alpha:false});
-  const imgs=new Array(N);
-  const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg?v='+V;
-  for(let i=0;i<N;i++){const im=new Image();im.decoding='async';im.onload=()=>draw(cur);im.src=u(i);imgs[i]=im;}
-  let cw=0,ch=0,dpr=1,cur=0,tgt=0;
-  function size(){dpr=Math.min(devicePixelRatio||1,2);cw=cv.width=Math.round(innerWidth*dpr);ch=cv.height=Math.round(innerHeight*dpr);cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';draw(cur);}
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches, mobile=matchMedia('(max-width:980px)').matches;
+  renderer.setClearColor(0x050407,1);
+  const scene=new THREE.Scene(), RANGE=2400;
+  scene.fog=new THREE.FogExp2(0x050407,0.00052);
+  const camera=new THREE.PerspectiveCamera(64, innerWidth/innerHeight, 1, 7000);
+  const sc=document.createElement('canvas'); sc.width=sc.height=64; const sx=sc.getContext('2d');
+  const sg=sx.createRadialGradient(32,32,0,32,32,32); sg.addColorStop(0,'rgba(255,255,255,1)'); sg.addColorStop(.25,'rgba(255,255,255,.5)'); sg.addColorStop(1,'rgba(255,255,255,0)');
+  sx.fillStyle=sg; sx.fillRect(0,0,64,64); const tex=new THREE.CanvasTexture(sc);
+  const N=mobile?700:1700;
+  const pos=new Float32Array(N*3), col=new Float32Array(N*3);
+  const GOLD=[0.91,0.84,0.66], PUR=[0.66,0.55,0.98], WHT=[0.90,0.93,1.0];
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-0.5)*1500; pos[i*3+1]=(Math.random()-0.5)*950; pos[i*3+2]=-Math.random()*RANGE;
+    const r=Math.random(), c=r<0.2?PUR:(r<0.32?WHT:GOLD); col[i*3]=c[0]; col[i*3+1]=c[1]; col[i*3+2]=c[2];
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const points=new THREE.Points(geo,new THREE.PointsMaterial({size:14,map:tex,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
+  scene.add(points);
+  const cores=[];
+  for(let k=0;k<5;k++){
+    const core=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(60,1)),
+      new THREE.LineBasicMaterial({color:0xE8D9A8,transparent:true,opacity:0.55,blending:THREE.AdditiveBlending,depthWrite:false}));
+    core.position.set((Math.random()-0.5)*340,(Math.random()-0.5)*220,-400-k*(RANGE/5)); scene.add(core); cores.push(core);
+  }
+  function resize(){renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+  resize();
+  let camZ=0,tgtZ=0,rot=0,tgtRot=0,t=0; const P=geo.attributes.position.array;
   function prog(){const h=document.documentElement.scrollHeight-innerHeight;return h>0?Math.min(Math.max(scrollY/h,0),1):0;}
-  function cover(im){if(!im||!im.naturalWidth||!cw)return;const ir=im.naturalWidth/im.naturalHeight,cr=cw/ch;let w,h,x,y;if(cr>ir){w=cw;h=w/ir;x=0;y=(ch-h)/2;}else{h=ch;w=h*ir;x=(cw-w)/2;y=0;}ctx.drawImage(im,x,y,w,h);}
-  function draw(p){const ST=0;let i=Math.min(N-1,Math.max(ST,ST+Math.round(p*(N-1-ST))));let im=imgs[i];
-    if(!im||!im.naturalWidth){for(let k=i;k>=0;k--){if(imgs[k]&&imgs[k].naturalWidth){im=imgs[k];break;}}}
-    cover(im);}
-  function loop(){cur+=(tgt-cur)*0.1;draw(cur);requestAnimationFrame(loop);}
-  addEventListener('scroll',()=>{tgt=prog();},{passive:true});
-  addEventListener('resize',size,{passive:true});
-  size();tgt=cur=prog();requestAnimationFrame(loop);
+  function frame(){
+    const p=prog(); tgtZ=p*RANGE*1.7; tgtRot=p*0.6;
+    camZ+=(tgtZ-camZ)*0.045; rot+=(tgtRot-rot)*0.045; t+=reduce?0:0.0016;
+    camera.position.z=300-camZ;
+    camera.position.x=Math.sin(rot)*70+Math.sin(t)*12;
+    camera.position.y=Math.sin(rot*0.7)*45+Math.cos(t*0.8)*8;
+    camera.lookAt(camera.position.x*0.4, camera.position.y*0.3, camera.position.z-700);
+    for(let i=0;i<N;i++){ if(P[i*3+2]>camera.position.z+60) P[i*3+2]-=RANGE; }
+    geo.attributes.position.needsUpdate=true;
+    for(const c of cores){ c.rotation.x+=0.0025; c.rotation.y+=0.0035;
+      if(c.position.z>camera.position.z+60){ c.position.z-=RANGE; c.position.x=(Math.random()-0.5)*340; c.position.y=(Math.random()-0.5)*220; } }
+    renderer.render(scene,camera); requestAnimationFrame(frame);
+  }
+  addEventListener('resize',resize,{passive:true}); requestAnimationFrame(frame);
 })();
 </script>
 
