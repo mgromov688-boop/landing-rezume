@@ -63,14 +63,11 @@ a{color:inherit;text-decoration:none}
 /* ============ NETWORK CANVAS (AI ↔ sales connections) ============ */
 #net{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
 
-/* ============ CINEMATIC FILM ON SCROLL — «над облаками» (image sequence) ============ */
-#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;
-  background:#050504 url("assets/seq-poster.jpg?v=2") center/cover no-repeat}
+/* ============ AI NEURAL FLYTHROUGH (живой canvas-плексус, ведётся скроллом) ============ */
+#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;background:#050407}
 .cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(5,5,4,.80) 0%,rgba(5,5,4,.52) 28%,rgba(5,5,4,.55) 62%,rgba(5,5,4,.92) 100%),
-    radial-gradient(140% 95% at 50% 26%,transparent 36%,rgba(5,5,4,.62) 100%)}
-/* кинофон активен → убираем сеть-частицы и hero-блобы (чистое небо) */
+  background:radial-gradient(125% 95% at 50% 40%,transparent 58%,rgba(3,2,6,.5) 100%)}
+/* нейро-фон активен → убираем старую сеть-частиц и hero-блобы */
 html.cine #net,html.cine .hero-bg{display:none}
 
 /* ============ ENTRANCE FROM DEPTH ============ */
@@ -1031,30 +1028,53 @@ map.forEach(x=>sio.observe(x.sec));
 </script>
 
 <script>
-/* ===== CINEMATIC FILM ON SCROLL — «над облаками», canvas image-sequence (desktop) =====
-   Скролл проматывает 81 кадр реального аэро-клипа = непрерывная сцена, кадр за кадром.
-   Mobile / reduced-motion / no-JS = статичный постер (CSS background на #cine). ===== */
+/* ===== AI NEURAL FLYTHROUGH — живой 3D-плексус, ведётся скроллом.
+   Вектор/canvas → чёткий на любом DPR (не мутный); тёмный → текст читаем без затемнения; в бренд-цветах. ===== */
 (function(){
   const cv=document.getElementById('cine'); if(!cv) return;
-  document.documentElement.classList.add('cine');   // чистый кинофон (постер) везде; живая промотка — десктоп
-  if(!matchMedia('(min-width:981px)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const N=96,PAD=3,ctx=cv.getContext('2d',{alpha:false});
-  const imgs=new Array(N); let firstShown=false;
-  const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg?v=2';
-  for(let i=0;i<N;i++){const im=new Image();im.decoding='async';
-    im.onload=()=>{ if(!firstShown){firstShown=true;} draw(cur); };
-    im.src=u(i); imgs[i]=im;}
-  let cw=0,ch=0,dpr=1,cur=0,tgt=0;
-  function size(){dpr=Math.min(devicePixelRatio||1,2);cw=cv.width=Math.round(innerWidth*dpr);ch=cv.height=Math.round(innerHeight*dpr);cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';draw(cur);}
+  document.documentElement.classList.add('cine');
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const mobile=matchMedia('(max-width:980px)').matches;
+  const ctx=cv.getContext('2d');
+  const N=mobile?150:360, DEPTH=1300, SX=1850, SY=1150, LINK=190;
+  let W,H,DPR,cx,cy,focal,nodes=[];
+  function sprite(rgb){const s=document.createElement('canvas');s.width=s.height=64;const c=s.getContext('2d');
+    const g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba('+rgb+',1)');g.addColorStop(.28,'rgba('+rgb+',.5)');g.addColorStop(1,'rgba('+rgb+',0)');c.fillStyle=g;c.fillRect(0,0,64,64);return s;}
+  const spG=sprite('232,217,168'),spP=sprite('167,139,250'),spW=sprite('236,240,255');
+  function init(){nodes=[];for(let i=0;i<N;i++){const r=Math.random();
+    nodes.push({x:(Math.random()-.5)*SX,y:(Math.random()-.5)*SY,z:Math.random()*DEPTH,s:Math.random()*1.2+.5,
+      sp:r<.18?spP:(r<.3?spW:spG)});}}
+  function size(){DPR=Math.min(devicePixelRatio||1,2);W=cv.width=Math.round(innerWidth*DPR);H=cv.height=Math.round(innerHeight*DPR);
+    cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';cx=W/2;cy=H/2;focal=Math.max(W,H)*0.92;}
+  let camZ=0,tgtZ=0,rot=0,tgtRot=0;
   function prog(){const h=document.documentElement.scrollHeight-innerHeight;return h>0?Math.min(Math.max(scrollY/h,0),1):0;}
-  function cover(im){if(!im||!im.naturalWidth||!cw)return;const ir=im.naturalWidth/im.naturalHeight,cr=cw/ch;let w,h,x,y;if(cr>ir){w=cw;h=w/ir;x=0;y=(ch-h)/2;}else{h=ch;w=h*ir;x=(cw-w)/2;y=0;}ctx.drawImage(im,x,y,w,h);}
-  function draw(p){let i=Math.min(N-1,Math.max(0,Math.round(p*(N-1))));let im=imgs[i];
-    if(!im||!im.naturalWidth){for(let k=i;k>=0;k--){if(imgs[k]&&imgs[k].naturalWidth){im=imgs[k];break;}}}
-    cover(im);}
-  function loop(){cur+=(tgt-cur)*0.12;draw(cur);requestAnimationFrame(loop);}
-  addEventListener('scroll',()=>{tgt=prog();},{passive:true});
-  addEventListener('resize',size,{passive:true});
-  size();tgt=cur=prog();requestAnimationFrame(loop);
+  const px=[],py=[],pd=[];
+  function frame(t){
+    const p=prog(); tgtZ=p*DEPTH*2.2; tgtRot=p*0.9;
+    camZ+=(tgtZ-camZ)*0.06; rot+=(tgtRot-rot)*0.06;
+    const dr=reduce?0:t*0.00003, cR=Math.cos(rot+dr), sR=Math.sin(rot+dr);
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<N;i++){const n=nodes[i];let z=n.z-camZ;z=((z%DEPTH)+DEPTH)%DEPTH;if(z<1)z=1;
+      const rx=n.x*cR-n.y*sR,ry=n.x*sR+n.y*cR,k=focal/z;
+      px[i]=cx+rx*k;py[i]=cy+ry*k;pd[i]=1-z/DEPTH;}
+    const lim=LINK*DPR;ctx.lineWidth=DPR*0.6;
+    for(let i=0;i<N;i++){const di=pd[i];if(di<0.1)continue;const ax=px[i],ay=py[i];
+      if(ax<-40||ax>W+40||ay<-40||ay>H+40)continue;
+      for(let j=i+1;j<N;j++){const dd=di<pd[j]?di:pd[j];if(dd<0.1)continue;
+        const dx=ax-px[j],dy=ay-py[j],d2=dx*dx+dy*dy;
+        if(d2<lim*lim){const o=(1-Math.sqrt(d2)/lim)*0.30*dd;
+          ctx.strokeStyle='rgba(232,217,168,'+o.toFixed(3)+')';
+          ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(px[j],py[j]);ctx.stroke();}}}
+    for(let i=0;i<N;i++){const d=pd[i];if(d<0.05)continue;
+      const r=(0.8+d*3.4)*DPR*nodes[i].s, gr=r*3.4;
+      ctx.globalAlpha=0.18+d*0.82;
+      ctx.drawImage(nodes[i].sp,px[i]-gr,py[i]-gr,gr*2,gr*2);}
+    ctx.globalAlpha=1;
+    requestAnimationFrame(frame);
+  }
+  size();init();
+  addEventListener('resize',()=>{size();init();},{passive:true});
+  requestAnimationFrame(frame);
 })();
 </script>
 
