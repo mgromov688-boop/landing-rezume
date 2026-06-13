@@ -1038,7 +1038,7 @@ map.forEach(x=>sio.observe(x.sec));
   const cv=document.getElementById('cine'); if(!cv) return;
   document.documentElement.classList.add('cine');   // чистый кинофон (постер) везде; живая промотка — десктоп
   if(!matchMedia('(min-width:981px)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const N=81,PAD=3,ctx=cv.getContext('2d',{alpha:false});
+  const N=96,PAD=3,ctx=cv.getContext('2d',{alpha:false});
   const imgs=new Array(N); let firstShown=false;
   const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg';
   for(let i=0;i<N;i++){const im=new Image();im.decoding='async';
