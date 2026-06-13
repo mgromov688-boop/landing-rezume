@@ -65,8 +65,9 @@ a{color:inherit;text-decoration:none}
 
 /* ============ AI GOLD-PARTICLE FILM (4K image-sequence, scroll-scrubbed) ============ */
 #cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;
-  background:#000 url("assets/seq-poster.jpg?v=5") center/cover no-repeat}
-.cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none}   /* фон чистый, БЕЗ затемнения */
+  background:#000 url("assets/seq-poster.jpg?v=6") center/cover no-repeat}
+.cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(5,5,4,.55) 0%,transparent 18%,transparent 80%,rgba(5,5,4,.62) 100%)}
 /* читаемость текста на ярких участках — мягкая тень текста, НЕ затемнение фона */
 html.cine .hero h1,html.cine .section-head h2,html.cine .footer h2{text-shadow:0 2px 22px rgba(0,0,0,.7)}
 html.cine .hero .lead,html.cine .hero .h1-role{text-shadow:0 1px 2px rgba(0,0,0,.95),0 2px 16px rgba(0,0,0,.85)}
@@ -1037,7 +1038,7 @@ map.forEach(x=>sio.observe(x.sec));
   const cv=document.getElementById('cine'); if(!cv) return;
   document.documentElement.classList.add('cine');
   if(!matchMedia('(min-width:981px)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const N=70,PAD=3,V='5',ctx=cv.getContext('2d',{alpha:false});
+  const N=70,PAD=3,V='6',ctx=cv.getContext('2d',{alpha:false});
   const imgs=new Array(N);
   const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg?v='+V;
   for(let i=0;i<N;i++){const im=new Image();im.decoding='async';im.onload=()=>draw(cur);im.src=u(i);imgs[i]=im;}
