@@ -65,7 +65,7 @@ a{color:inherit;text-decoration:none}
 
 /* ============ CINEMATIC FILM ON SCROLL — «над облаками» (image sequence) ============ */
 #cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;
-  background:#050504 url("assets/seq-poster.jpg") center/cover no-repeat}
+  background:#050504 url("assets/seq-poster.jpg?v=2") center/cover no-repeat}
 .cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
     linear-gradient(180deg,rgba(5,5,4,.80) 0%,rgba(5,5,4,.52) 28%,rgba(5,5,4,.55) 62%,rgba(5,5,4,.92) 100%),
@@ -1040,7 +1040,7 @@ map.forEach(x=>sio.observe(x.sec));
   if(!matchMedia('(min-width:981px)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   const N=96,PAD=3,ctx=cv.getContext('2d',{alpha:false});
   const imgs=new Array(N); let firstShown=false;
-  const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg';
+  const u=i=>'assets/seq/f'+String(i+1).padStart(PAD,'0')+'.jpg?v=2';
   for(let i=0;i<N;i++){const im=new Image();im.decoding='async';
     im.onload=()=>{ if(!firstShown){firstShown=true;} draw(cur); };
     im.src=u(i); imgs[i]=im;}
