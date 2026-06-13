@@ -340,11 +340,17 @@ nav.scrolled{padding:13px 40px;background:rgba(18,17,16,0.72);backdrop-filter:bl
   .hero-bg .blob,.marquee-track,.scrolldown .mouse::after,.brand .dot::after{animation:none}
 }
 
-/* ============ PREMIUM SCROLL SCRUB (desktop only — Boardroom-strict: subtle depth) ============ */
-html.scrub [data-par],html.scrub [data-rise]{will-change:transform;transition:none}
-html.scrub [data-cards]>*{will-change:transform,opacity;transition:none}
-/* on desktop the scrub engine owns motion → one-shot reveal/stagger shown instantly (no double-handling) */
-html.scrub .reveal,html.scrub .stagger>*{opacity:1;transform:none;filter:none;transition:none}
+/* ============ PREMIUM SCROLL — GSAP ScrollTrigger (desktop only) ============ */
+/* GSAP owns scroll motion on desktop → neutralize one-shot reveal initial states (GSAP sets its own inline) */
+html.gsap .reveal,html.gsap .stagger>*{opacity:1;transform:none;filter:none;transition:none}
+/* word-mask heading reveal — слова выезжают из-под маски */
+.wmask{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em}
+.wmask .winner{display:inline-block;will-change:transform}
+/* Сильные стороны → горизонтальный pinned-дек на десктопе */
+html.gsap #strengths{overflow:hidden}
+html.gsap #strengths .wrap{max-width:none}
+html.gsap #strengths .grid-3{display:flex;flex-wrap:nowrap;max-width:none;margin:0;gap:24px;align-items:stretch}
+html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width:1140px){.hero-grid{gap:48px}.wrap{padding:0 32px}}
@@ -714,7 +720,15 @@ html.scrub .reveal,html.scrub .stagger>*{opacity:1;transform:none;filter:none;tr
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+
 <script>
+/* premium-scroll mode: GSAP доступен + десктоп + анимация разрешена */
+const GSAPMODE=!!(window.gsap&&window.ScrollTrigger)&&matchMedia('(min-width:981px)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches;
+if(GSAPMODE)document.documentElement.classList.add('gsap');
+
 /* ===== Animated AI network background v2 =====
    Метафора: нейросеть (AI) + переговоры/звонки.
    — импульсы-«данные» бегут по связям (сделка движется по воронке)
@@ -901,7 +915,7 @@ onScroll();window.addEventListener('scroll',onScroll,{passive:true});
 /* ===== Reveal on scroll ===== */
 const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
   {threshold:0.15,rootMargin:'0px 0px -8% 0px'});
-document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
+if(!GSAPMODE)document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
 
 /* ===== Count-up metrics ===== */
 const fmt=n=>n.toLocaleString('ru-RU').replace(/,/g,' ');
@@ -954,44 +968,53 @@ map.forEach(x=>sio.observe(x.sec));
 </script>
 
 <script>
-/* ===== PREMIUM SCROLL SCRUB (vanilla rAF) — desktop only, Boardroom-strict: subtle scrubbed depth =====
-   Parallax depth on глоу (continuous) + smooth scrubbed entrance (rise/cascade) on каждой секции;
-   latches once settled so hover-lift on cards keeps working. Mobile / reduced-motion / no-JS = прежний reveal. */
+/* ===== PREMIUM SCROLL — GSAP ScrollTrigger + Lenis (desktop only). Мощный приём в КАЖДОЙ секции.
+   Fallback: mobile / reduced-motion / нет GSAP / нет JS = прежний reveal (контент виден). ===== */
 (function(){
-  const desk=matchMedia('(min-width:981px)').matches,reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  if(!desk||reduce)return;
-  document.documentElement.classList.add('scrub');
-  const pars=[...document.querySelectorAll('[data-par]')].map(el=>({el,k:parseFloat(el.dataset.par)||0.06}));
-  const rises=[...document.querySelectorAll('[data-rise]')];
-  const decks=[...document.querySelectorAll('[data-cards]')].map(el=>({el,kids:[...el.children]}));
-  const done=new WeakSet();
-  const vh=()=>innerHeight,clamp=v=>v<0?0:v>1?1:v,ease=v=>1-Math.pow(1-clamp(v),3);
-  const prog=el=>{const r=el.getBoundingClientRect();return 1-(r.top+r.height/2)/vh();};
-  function frame(){
-    for(const p of pars){const r=p.el.getBoundingClientRect(),c=r.top+r.height/2-vh()/2;
-      p.el.style.transform='translate3d(0,'+(-c*p.k).toFixed(1)+'px,0)';}
-    for(const el of rises){if(done.has(el))continue;
-      const e=ease((prog(el)+0.12)/0.5);
-      if(e>=0.999){el.style.transform='';el.style.opacity='';done.add(el);}
-      else{el.style.transform='translate3d(0,'+((1-e)*30).toFixed(1)+'px,0)';el.style.opacity=(0.3+0.7*e).toFixed(3);}}
-    for(const g of decks){const b=prog(g.el)+0.18;
-      g.kids.forEach((k,i)=>{if(done.has(k))return;
-        const e=ease((b-i*0.045)/0.55);
-        if(e>=0.999){k.style.transform='';k.style.opacity='';done.add(k);}
-        else{k.style.transform='translate3d(0,'+((1-e)*38).toFixed(1)+'px,0)';k.style.opacity=(0.2+0.8*e).toFixed(3);}});}
-    requestAnimationFrame(frame);
+  if(!document.documentElement.classList.contains('gsap')||!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  /* Lenis momentum + ScrollTrigger sync (масляный скролл) */
+  if(window.Lenis){
+    const lenis=new Lenis({lerp:0.1});
+    lenis.on('scroll',ScrollTrigger.update);
+    gsap.ticker.add(t=>lenis.raf(t*1000));
+    gsap.ticker.lagSmoothing(0);
   }
-  requestAnimationFrame(frame);
-})();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
-<script>
-/* ===== Lenis butter-scroll — desktop only, guarded (no-op if lib/feature unavailable) ===== */
-(function(){
-  if(!window.Lenis||!matchMedia('(min-width:981px)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const lenis=new Lenis({lerp:0.1});
-  function raf(t){lenis.raf(t);requestAnimationFrame(raf);}
-  requestAnimationFrame(raf);
+  /* 1) Заголовки — word-mask reveal (слова выезжают из-под маски по скроллу) */
+  document.querySelectorAll('.section-head h2').forEach(h=>{
+    const words=h.textContent.trim().split(/\s+/);
+    h.innerHTML=words.map(w=>'<span class="wmask"><span class="winner">'+w+'</span></span>').join(' ');
+    gsap.from(h.querySelectorAll('.winner'),{yPercent:118,opacity:0,stagger:0.1,ease:'power3.out',
+      scrollTrigger:{trigger:h,start:'top 88%',end:'top 50%',scrub:true}});
+  });
+  /* 2) Hero — параллакс-глубина на выходе */
+  gsap.to('.photo-stage',{yPercent:-14,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('.hero-text',{yPercent:-30,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  /* 3) Результаты — 3D-каскад с подъёмом */
+  gsap.from('#metrics .metric',{yPercent:55,opacity:0,rotateX:26,transformPerspective:900,transformOrigin:'50% 100%',stagger:0.12,ease:'power3.out',
+    scrollTrigger:{trigger:'#metrics .metrics',start:'top 85%',end:'top 38%',scrub:true}});
+  /* 4) Сильные стороны — ГОРИЗОНТАЛЬНЫЙ pinned-скролл (фирменный wow) */
+  const track=document.querySelector('#strengths .grid-3');
+  if(track){
+    const dist=()=>Math.max(0,track.scrollWidth-window.innerWidth*0.82);
+    gsap.to(track,{x:()=>-dist(),ease:'none',
+      scrollTrigger:{trigger:'#strengths',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,anticipatePin:1,invalidateOnRefresh:true}});
+  }
+  /* 5) Опыт — карточки въезжают с разных сторон + масштаб */
+  gsap.utils.toArray('#experience .exp-item').forEach((it,i)=>{
+    gsap.from(it,{xPercent:(i%2?16:-16),opacity:0,scale:0.93,ease:'power3.out',
+      scrollTrigger:{trigger:it,start:'top 88%',end:'top 52%',scrub:true}});
+  });
+  /* 6) AI — 3D-каскад */
+  gsap.from('#ai .card',{yPercent:50,opacity:0,rotateY:14,transformPerspective:900,stagger:0.1,ease:'power3.out',
+    scrollTrigger:{trigger:'#ai .grid-3',start:'top 85%',end:'top 38%',scrub:true}});
+  /* 7) Образование — масштаб-reveal */
+  gsap.from('#education .edu',{scale:0.8,opacity:0,ease:'power3.out',
+    scrollTrigger:{trigger:'#education .edu',start:'top 90%',end:'top 52%',scrub:true}});
+  /* 8) Контакты — подъём */
+  gsap.from('.footer-inner>*',{yPercent:28,opacity:0,stagger:0.1,ease:'power3.out',
+    scrollTrigger:{trigger:'.footer-inner',start:'top 90%',end:'top 56%',scrub:true}});
+  ScrollTrigger.refresh();
 })();
 </script>
 
