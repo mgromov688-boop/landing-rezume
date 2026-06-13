@@ -1044,7 +1044,7 @@ map.forEach(x=>sio.observe(x.sec));
   function size(){dpr=Math.min(devicePixelRatio||1,2);cw=cv.width=Math.round(innerWidth*dpr);ch=cv.height=Math.round(innerHeight*dpr);cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';draw(cur);}
   function prog(){const h=document.documentElement.scrollHeight-innerHeight;return h>0?Math.min(Math.max(scrollY/h,0),1):0;}
   function cover(im){if(!im||!im.naturalWidth||!cw)return;const ir=im.naturalWidth/im.naturalHeight,cr=cw/ch;let w,h,x,y;if(cr>ir){w=cw;h=w/ir;x=0;y=(ch-h)/2;}else{h=ch;w=h*ir;x=(cw-w)/2;y=0;}ctx.drawImage(im,x,y,w,h);}
-  function draw(p){let i=Math.min(N-1,Math.max(0,Math.round(p*(N-1))));let im=imgs[i];
+  function draw(p){const ST=16;let i=Math.min(N-1,Math.max(ST,ST+Math.round(p*(N-1-ST))));let im=imgs[i];
     if(!im||!im.naturalWidth){for(let k=i;k>=0;k--){if(imgs[k]&&imgs[k].naturalWidth){im=imgs[k];break;}}}
     cover(im);}
   function loop(){cur+=(tgt-cur)*0.1;draw(cur);requestAnimationFrame(loop);}
