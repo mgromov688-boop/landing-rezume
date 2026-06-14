@@ -64,7 +64,7 @@ a{color:inherit;text-decoration:none}
 #net{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
 
 /* ============ AI NEURAL FLYTHROUGH (Three.js WebGL, real-time, scroll-driven) ============ */
-#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;background:#050407}
+#cine{position:fixed;inset:0;z-index:-3;width:100%;height:100%;display:block;background:#04030a}
 .cine-scrim{position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:linear-gradient(180deg,rgba(5,5,4,.55) 0%,transparent 18%,transparent 80%,rgba(5,5,4,.62) 100%)}
 /* читаемость текста на ярких участках — мягкая тень текста, НЕ затемнение фона */
@@ -1029,60 +1029,164 @@ map.forEach(x=>sio.observe(x.sec));
 })();
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script>
-/* ===== AI NEURAL FLYTHROUGH — Three.js (WebGL), сцена в реальном времени:
-   камера летит сквозь минималистичную нейросеть (светящиеся узлы + золотые AI-ядра на чёрном),
-   ход камеры + смена ракурса по скроллу. Рендер в разрешении экрана → чётко (4K-уровень), не мутно.
-   Mobile = меньше частиц; нет WebGL/JS = тёмный фон. ===== */
+/* ===== AI CORE HERO — Three.js (WebGL) премиум 3D-объект (ZENITH-style):
+   тёмное глянцевое AI-ядро + светящийся бар-кольцо (signature) + нейро-оболочка +
+   орбитальные кольца + парящие осколки + UnrealBloom. Рендер в разрешении экрана (4K-чётко).
+   Скролл: ядро вращается, дрейфует вверх, камера отъезжает + mouse-parallax.
+   Mobile = меньше частиц; reduced-motion = 1 статичный кадр; нет WebGL/JS = тёмный фон. ===== */
 (function(){
   const cv=document.getElementById('cine'); if(!cv||!window.THREE) return;
-  let renderer; try{ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false}); }catch(e){ return; }
+  let renderer;
+  try{ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'}); }
+  catch(e){ return; }
   document.documentElement.classList.add('cine');
-  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches, mobile=matchMedia('(max-width:980px)').matches;
-  renderer.setClearColor(0x050407,1);
-  const scene=new THREE.Scene(), RANGE=2400;
-  scene.fog=new THREE.FogExp2(0x050407,0.00052);
-  const camera=new THREE.PerspectiveCamera(64, innerWidth/innerHeight, 1, 7000);
+
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const mobile=matchMedia('(max-width:980px)').matches;
+  const BG=0x04030a, DPR=Math.min(devicePixelRatio||1, mobile?1.7:2);
+
+  renderer.setPixelRatio(DPR); renderer.setSize(innerWidth,innerHeight,false);
+  renderer.setClearColor(BG,1);
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.08;
+
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(BG,0.011);
+  const camera=new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 400);
+  camera.position.set(0,0,14);
+
+  /* премиум-отражения на металле */
+  try{ const pm=new THREE.PMREMGenerator(renderer);
+    scene.environment=pm.fromScene(new THREE.RoomEnvironment(),0.04).texture; pm.dispose(); }catch(e){}
+
+  const GOLD=0xE8D9A8, GOLDW=0xFFF1C9, PUR=0x7C3AED, PURL=0xA78BFA;
+
+  /* glow-спрайт для частиц */
   const sc=document.createElement('canvas'); sc.width=sc.height=64; const sx=sc.getContext('2d');
-  const sg=sx.createRadialGradient(32,32,0,32,32,32); sg.addColorStop(0,'rgba(255,255,255,1)'); sg.addColorStop(.25,'rgba(255,255,255,.5)'); sg.addColorStop(1,'rgba(255,255,255,0)');
-  sx.fillStyle=sg; sx.fillRect(0,0,64,64); const tex=new THREE.CanvasTexture(sc);
-  const N=mobile?700:1700;
-  const pos=new Float32Array(N*3), col=new Float32Array(N*3);
-  const GOLD=[0.91,0.84,0.66], PUR=[0.66,0.55,0.98], WHT=[0.90,0.93,1.0];
-  for(let i=0;i<N;i++){
-    pos[i*3]=(Math.random()-0.5)*1500; pos[i*3+1]=(Math.random()-0.5)*950; pos[i*3+2]=-Math.random()*RANGE;
-    const r=Math.random(), c=r<0.2?PUR:(r<0.32?WHT:GOLD); col[i*3]=c[0]; col[i*3+1]=c[1]; col[i*3+2]=c[2];
+  const sg=sx.createRadialGradient(32,32,0,32,32,32);
+  sg.addColorStop(0,'rgba(255,255,255,1)'); sg.addColorStop(.25,'rgba(255,255,255,.55)'); sg.addColorStop(1,'rgba(255,255,255,0)');
+  sx.fillStyle=sg; sx.fillRect(0,0,64,64); const spriteTex=new THREE.CanvasTexture(sc);
+
+  /* свет */
+  scene.add(new THREE.AmbientLight(0x404060,0.6));
+  const key=new THREE.DirectionalLight(GOLD,2.4); key.position.set(6,7,8); scene.add(key);
+  const rimL=new THREE.DirectionalLight(PUR,2.0); rimL.position.set(-8,-3,-6); scene.add(rimL);
+  const fill=new THREE.PointLight(PURL,1.2,60); fill.position.set(-4,4,6); scene.add(fill);
+
+  /* ---- AI-ЯДРО ---- */
+  const core=new THREE.Group(); core.position.set(mobile?0:2.4,0.4,0); scene.add(core);
+
+  const body=new THREE.Mesh(new THREE.SphereGeometry(3,96,96),
+    new THREE.MeshStandardMaterial({color:0x0c0b16,metalness:1.0,roughness:0.26,envMapIntensity:1.25}));
+  core.add(body);
+
+  const shell=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(3.05,3)),
+    new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:0.16,blending:THREE.AdditiveBlending,depthWrite:false}));
+  core.add(shell);
+
+  const rim=new THREE.Mesh(new THREE.IcosahedronGeometry(3.5,4), new THREE.ShaderMaterial({
+    uniforms:{c1:{value:new THREE.Color(GOLD)},c2:{value:new THREE.Color(PUR)}},
+    vertexShader:'varying vec3 vN;varying vec3 vV;void main(){vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.0);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'varying vec3 vN;varying vec3 vV;uniform vec3 c1;uniform vec3 c2;void main(){float f=pow(1.0-max(dot(vN,vV),0.0),2.6);vec3 col=mix(c2,c1,f);gl_FragColor=vec4(col*f*1.7,f);}',
+    transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false}));
+  core.add(rim);
+
+  /* signature светящийся экваториальный бар (ZENITH) */
+  const bar=new THREE.Mesh(new THREE.TorusGeometry(3.02,0.045,16,160),new THREE.MeshBasicMaterial({color:GOLDW}));
+  bar.rotation.x=Math.PI/2; core.add(bar);
+
+  /* орбитальные кольца (свой спин) */
+  const orbits=new THREE.Group(); core.add(orbits);
+  const ringA=new THREE.Mesh(new THREE.TorusGeometry(4.7,0.018,12,180),new THREE.MeshBasicMaterial({color:GOLD}));
+  ringA.rotation.set(Math.PI*0.42,0.3,0); orbits.add(ringA);
+  const ringB=new THREE.Mesh(new THREE.TorusGeometry(5.5,0.014,12,200),new THREE.MeshBasicMaterial({color:PURL}));
+  ringB.rotation.set(Math.PI*0.6,-0.5,0.4); orbits.add(ringB);
+
+  /* частицы */
+  function makePoints(n,spread,rmin,rmax,size){
+    const pos=new Float32Array(n*3),col=new Float32Array(n*3);
+    const cs=[[0.91,0.84,0.66],[0.66,0.55,0.98],[1.0,0.95,0.82]];
+    for(let i=0;i<n;i++){
+      let x,y,z;
+      if(spread){ x=(Math.random()-0.5)*spread; y=(Math.random()-0.5)*spread*0.7; z=(Math.random()-0.5)*spread-spread*0.4; }
+      else{ const r=rmin+Math.random()*(rmax-rmin),th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);
+        x=r*Math.sin(ph)*Math.cos(th); y=r*Math.sin(ph)*Math.sin(th); z=r*Math.cos(ph); }
+      pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;
+      const c=cs[(Math.random()*(spread?2:3))|0]; col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];
+    }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.BufferAttribute(col,3));
+    return new THREE.Points(g,new THREE.PointsMaterial({size:size,map:spriteTex,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
   }
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  const points=new THREE.Points(geo,new THREE.PointsMaterial({size:14,map:tex,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
-  scene.add(points);
-  const cores=[];
-  for(let k=0;k<5;k++){
-    const core=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(60,1)),
-      new THREE.LineBasicMaterial({color:0xE8D9A8,transparent:true,opacity:0.55,blending:THREE.AdditiveBlending,depthWrite:false}));
-    core.position.set((Math.random()-0.5)*340,(Math.random()-0.5)*220,-400-k*(RANGE/5)); scene.add(core); cores.push(core);
+  const halo=makePoints(mobile?280:620,0,3.3,6.2,0.12); orbits.add(halo);
+  const stars=makePoints(mobile?500:1300,120,0,0,0.5); scene.add(stars);
+
+  /* парящие осколки */
+  const debris=[]; const shapes=[THREE.DodecahedronGeometry,THREE.OctahedronGeometry,THREE.TetrahedronGeometry];
+  const dMat=new THREE.MeshStandardMaterial({color:0x14121d,metalness:0.95,roughness:0.35,envMapIntensity:1.1});
+  for(let i=0;i<(mobile?6:10);i++){
+    const G=shapes[(Math.random()*3)|0]; const m=new THREE.Mesh(new G(0.18+Math.random()*0.4,0),dMat);
+    const r=4.8+Math.random()*4.5,a=Math.random()*6.283,h=(Math.random()-0.5)*5;
+    m.position.set(Math.cos(a)*r,h,Math.sin(a)*r);
+    m.userData={sp:0.2+Math.random()*0.5,ph:Math.random()*6.283,rx:(Math.random()-0.5)*0.01,ry:(Math.random()-0.5)*0.01,base:h};
+    core.add(m); debris.push(m);
   }
-  function resize(){renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
-  resize();
-  let camZ=0,tgtZ=0,rot=0,tgtRot=0,t=0; const P=geo.attributes.position.array;
+
+  /* postprocessing: bloom */
+  let composer,bloom;
+  try{
+    composer=new THREE.EffectComposer(renderer);
+    composer.addPass(new THREE.RenderPass(scene,camera));
+    bloom=new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),mobile?0.7:0.95,0.6,0.62);
+    composer.addPass(bloom);
+    composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
+    composer.setPixelRatio(DPR); composer.setSize(innerWidth,innerHeight);
+  }catch(e){ composer=null; }
+
+  /* интерактив */
+  let mx=0,my=0;
+  addEventListener('pointermove',e=>{ mx=(e.clientX/innerWidth-0.5); my=(e.clientY/innerHeight-0.5); },{passive:true});
   function prog(){const h=document.documentElement.scrollHeight-innerHeight;return h>0?Math.min(Math.max(scrollY/h,0),1):0;}
-  function frame(){
-    const p=prog(); tgtZ=p*RANGE*1.7; tgtRot=p*0.6;
-    camZ+=(tgtZ-camZ)*0.045; rot+=(tgtRot-rot)*0.045; t+=reduce?0:0.0016;
-    camera.position.z=300-camZ;
-    camera.position.x=Math.sin(rot)*70+Math.sin(t)*12;
-    camera.position.y=Math.sin(rot*0.7)*45+Math.cos(t*0.8)*8;
-    camera.lookAt(camera.position.x*0.4, camera.position.y*0.3, camera.position.z-700);
-    for(let i=0;i<N;i++){ if(P[i*3+2]>camera.position.z+60) P[i*3+2]-=RANGE; }
-    geo.attributes.position.needsUpdate=true;
-    for(const c of cores){ c.rotation.x+=0.0025; c.rotation.y+=0.0035;
-      if(c.position.z>camera.position.z+60){ c.position.z-=RANGE; c.position.x=(Math.random()-0.5)*340; c.position.y=(Math.random()-0.5)*220; } }
-    renderer.render(scene,camera); requestAnimationFrame(frame);
+
+  function resize(){
+    const dpr=Math.min(devicePixelRatio||1, mobile?1.7:2);
+    renderer.setPixelRatio(dpr); renderer.setSize(innerWidth,innerHeight,false);
+    camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+    core.position.x=matchMedia('(max-width:980px)').matches?0:2.4;
+    if(composer){ composer.setPixelRatio(dpr); composer.setSize(innerWidth,innerHeight); bloom.setSize(innerWidth,innerHeight); }
   }
-  addEventListener('resize',resize,{passive:true}); requestAnimationFrame(frame);
+  addEventListener('resize',resize,{passive:true});
+
+  let t=0,sRot=0,sY=0,sZ=0,cx=0,cy=0;
+  function render(){
+    const p=prog(); t+=reduce?0:0.016;
+    const tRot=p*2.4,tY=p*5.2,tZ=p*9.0;
+    sRot+=(tRot-sRot)*0.06; sY+=(tY-sY)*0.06; sZ+=(tZ-sZ)*0.06;
+    core.position.y=0.4+sY; core.rotation.y=t*0.1+sRot; core.rotation.x=Math.sin(t*0.12)*0.06;
+    shell.rotation.y=-t*0.05; shell.rotation.x=t*0.03;
+    orbits.rotation.y=t*0.16; orbits.rotation.x=Math.sin(t*0.1)*0.2+0.1;
+    ringA.rotation.z+=0.004; ringB.rotation.z-=0.003;
+    stars.rotation.y=t*0.006;
+    for(const m of debris){const u=m.userData; m.position.y=u.base+Math.sin(t*u.sp+u.ph)*0.6; m.rotation.x+=u.rx; m.rotation.y+=u.ry;}
+    cx+=(mx*2.2-cx)*0.05; cy+=(-my*1.5-cy)*0.05;
+    camera.position.x=cx; camera.position.y=cy+sY*0.45; camera.position.z=14+sZ;
+    camera.lookAt(core.position.x*0.5,0.4+sY*0.5,0);
+    if(composer)composer.render(); else renderer.render(scene,camera);
+    if(!reduce)requestAnimationFrame(render);
+  }
+  resize(); render();
 })();
 </script>
 
