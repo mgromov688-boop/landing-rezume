@@ -1046,7 +1046,7 @@ map.forEach(x=>sio.observe(x.sec));
   const mobile=matchMedia('(max-width:980px)').matches;
   if(mobile||reduce) return; /* постер из CSS background */
   const ctx=cv.getContext('2d'); if(!ctx) return;
-  const N=71, frames=new Array(N);
+  const N=70, frames=new Array(N);
   document.documentElement.classList.add('seq');
   for(let i=0;i<N;i++){ const im=new Image(); im.src='assets/seq/f'+String(i).padStart(3,'0')+'.webp'; frames[i]=im; }
   let W,H,cur=0;
