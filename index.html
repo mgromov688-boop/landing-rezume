@@ -63,18 +63,15 @@ a{color:inherit;text-decoration:none}
 /* ============ NETWORK CANVAS (AI ↔ sales connections) ============ */
 #net{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
 
-/* ============ AI HERO IMAGE (premium studio render — объект справа, текст слева на чёрном) ============ */
-.hero-media{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.hero-media .bg{position:absolute;inset:-9% -5%;
-  background:#04030a url("assets/hero-ai.jpg") no-repeat;background-size:cover;background-position:62% 42%;
-  will-change:transform}
-.hero-media::after{content:"";position:absolute;inset:0;z-index:1;
-  background:
-    linear-gradient(90deg,rgba(4,3,10,.97) 0%,rgba(4,3,10,.86) 26%,rgba(4,3,10,.36) 50%,rgba(4,3,10,0) 70%),
-    linear-gradient(180deg,rgba(4,3,10,.5) 0%,rgba(4,3,10,0) 20%,rgba(4,3,10,0) 55%,var(--bg-base) 100%)}
-/* мягкая тень текста для читаемости поверх ярких участков */
-.hero h1,.section-head h2,.footer h2{text-shadow:0 2px 22px rgba(0,0,0,.5)}
-.hero .lead,.hero .h1-role{text-shadow:0 1px 2px rgba(0,0,0,.8),0 2px 16px rgba(0,0,0,.6)}
+/* ============ AI CINEMATIC SCROLL (image-sequence, скрабится по скроллу) ============ */
+#cine{position:fixed;inset:0;z-index:-2;width:100%;height:100%;display:block;
+  background:#04030a url("assets/seq/f041.jpg") center/cover no-repeat}
+.seq-scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,3,10,.5) 0%,rgba(4,3,10,0) 16%,rgba(4,3,10,0) 76%,rgba(4,3,10,.6) 100%)}
+html.seq #net,html.seq .hero-bg{display:none}
+/* читаемость текста поверх сцены — мягкая тень, фон не затемняем целиком */
+.hero h1,.section-head h2,.footer h2{text-shadow:0 2px 22px rgba(0,0,0,.6)}
+.hero .lead,.hero .h1-role,.hero .eyebrow{text-shadow:0 1px 2px rgba(0,0,0,.9),0 2px 16px rgba(0,0,0,.75)}
 .hero-bg{display:none}
 
 /* ============ ENTRANCE FROM DEPTH ============ */
@@ -408,6 +405,8 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
 <body>
 <script>document.documentElement.classList.add('js')</script>
 
+<canvas id="cine" aria-hidden="true"></canvas>
+<div class="seq-scrim" aria-hidden="true"></div>
 <canvas id="net" aria-hidden="true"></canvas>
 <div class="grain"></div>
 <div class="vignette" aria-hidden="true"></div>
@@ -435,7 +434,6 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
 
 <!-- ============ HERO ============ -->
 <header class="hero" id="top">
-  <div class="hero-media" aria-hidden="true"><div class="bg"></div></div>
   <div class="hero-bg">
     <span class="blob b1"></span><span class="blob b2"></span>
   </div>
@@ -1007,7 +1005,6 @@ map.forEach(x=>sio.observe(x.sec));
       scrollTrigger:{trigger:h,start:'top 88%',end:'top 50%',scrub:true}});
   });
   /* 2) Hero — параллакс-глубина на выходе */
-  gsap.to('.hero-media .bg',{yPercent:16,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
   gsap.to('.photo-stage',{yPercent:-14,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
   gsap.to('.hero-text',{yPercent:-30,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
   /* 3) Результаты — 3D-каскад с подъёмом */
@@ -1038,6 +1035,34 @@ map.forEach(x=>sio.observe(x.sec));
 })();
 </script>
 
+<script>
+/* ===== AI CINEMATIC SCROLL — кадровая секвенция, скрабится по скроллу (приём Apple).
+   Полноэкранная сцена-пролёт сквозь AI/дата-поле (gold-on-black) непрерывно
+   трансформируется по мере прокрутки; контент плывёт поверх. Рендер cover-fit, rAF+lerp.
+   Desktop = скраб; mobile/reduced-motion/no-JS = статичный постер (CSS). ===== */
+(function(){
+  const cv=document.getElementById('cine'); if(!cv) return;
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const mobile=matchMedia('(max-width:980px)').matches;
+  if(mobile||reduce) return; /* постер из CSS background */
+  const ctx=cv.getContext('2d'); if(!ctx) return;
+  const N=83, frames=new Array(N);
+  document.documentElement.classList.add('seq');
+  for(let i=0;i<N;i++){ const im=new Image(); im.src='assets/seq/f'+String(i).padStart(3,'0')+'.jpg'; frames[i]=im; }
+  let W,H,cur=0;
+  function resize(){ const DPR=Math.min(devicePixelRatio||1,2);
+    W=cv.width=Math.round(innerWidth*DPR); H=cv.height=Math.round(innerHeight*DPR);
+    cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px'; draw(cur); }
+  function cover(img){ const ir=img.naturalWidth/img.naturalHeight, cr=W/H; let w,h;
+    if(cr>ir){ w=W; h=W/ir; } else { h=H; w=H*ir; } ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h); }
+  function draw(f){ const i=Math.max(0,Math.min(N-1,Math.round(f))); const img=frames[i];
+    if(img&&img.complete&&img.naturalWidth){ cover(img); } }
+  function prog(){ const h=document.documentElement.scrollHeight-innerHeight; return h>0?Math.min(Math.max(scrollY/h,0),1):0; }
+  function loop(){ const tgt=prog()*(N-1); cur+=(tgt-cur)*0.12; draw(cur); requestAnimationFrame(loop); }
+  addEventListener('resize',resize,{passive:true});
+  resize(); requestAnimationFrame(loop);
+})();
+</script>
 
 </body>
 </html>
