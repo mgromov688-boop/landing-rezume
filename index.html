@@ -728,41 +728,66 @@ map.forEach(x=>sio.observe(x.sec));
     gsap.ticker.add(t=>lenis.raf(t*1000));
     gsap.ticker.lagSmoothing(0);
   }
-  /* 1) Заголовки — word-mask reveal */
+  gsap.defaults({ease:'power3.out'});
+
+  /* 1) Заголовки секций — слова выезжают из-под маски (премиум-ревил) */
   document.querySelectorAll('.section-head h2').forEach(h=>{
     const words=h.textContent.trim().split(/\s+/);
     h.innerHTML=words.map(w=>'<span class="wmask"><span class="winner">'+w+'</span></span>').join(' ');
-    gsap.from(h.querySelectorAll('.winner'),{yPercent:118,opacity:0,stagger:0.1,ease:'power3.out',
-      scrollTrigger:{trigger:h,start:'top 88%',end:'top 50%',scrub:true}});
+    gsap.from(h.querySelectorAll('.winner'),{yPercent:125,opacity:0,stagger:0.11,ease:'expo.out',
+      scrollTrigger:{trigger:h,start:'top 90%',end:'top 52%',scrub:true}});
   });
-  /* 2) Hero — параллакс-глубина */
-  gsap.to('.photo-stage',{yPercent:-12,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
-  gsap.to('.hero-text',{yPercent:-26,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
-  gsap.to('.hero-aura .a1',{yPercent:30,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
-  /* 3) Результаты — 3D-каскад плашек */
-  gsap.from('#metrics .metric',{yPercent:50,opacity:0,rotateX:24,transformPerspective:900,transformOrigin:'50% 100%',stagger:0.12,ease:'power3.out',
-    scrollTrigger:{trigger:'#metrics .metrics',start:'top 85%',end:'top 40%',scrub:true}});
-  /* 4) Сильные стороны — ГОРИЗОНТАЛЬНЫЙ pinned-скролл */
+
+  /* 2) Лиды/подзаголовки — мягкий подъём с лёгким блюром (немного элементов → перф ок) */
+  gsap.utils.toArray('.section-head .lead, .ai-lead, .ai-footnote').forEach(el=>{
+    gsap.from(el,{y:28,autoAlpha:0,filter:'blur(6px)',ease:'power2.out',
+      scrollTrigger:{trigger:el,start:'top 94%',end:'top 72%',scrub:true}});
+  });
+
+  /* 3) Разделители — прочерчиваются слева направо */
+  gsap.utils.toArray('.divider').forEach(d=>{
+    gsap.from(d,{scaleX:0,transformOrigin:'left center',ease:'power2.out',
+      scrollTrigger:{trigger:d,start:'top 94%',end:'top 80%',scrub:true}});
+  });
+
+  /* 4) Hero — параллакс-глубина слоёв на выходе */
+  gsap.to('.hero-text',{yPercent:-22,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('.photo-stage',{yPercent:-9,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('.hero-aura .a1',{yPercent:36,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('.hero-aura .a2',{yPercent:-24,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+
+  /* 5) Результаты — плашки въезжают с глубиной (3D-каскад) */
+  gsap.from('#metrics .metric',{yPercent:60,opacity:0,rotateX:28,transformPerspective:1000,transformOrigin:'50% 100%',stagger:0.13,ease:'power3.out',
+    scrollTrigger:{trigger:'#metrics .metrics',start:'top 88%',end:'top 44%',scrub:true}});
+
+  /* 6) Сильные стороны — горизонтальный pinned-дек (фирменный wow) + приход карточек */
   const track=document.querySelector('#strengths .grid-3');
   if(track){
     const dist=()=>Math.max(0,track.scrollWidth-window.innerWidth*0.82);
     gsap.to(track,{x:()=>-dist(),ease:'none',
       scrollTrigger:{trigger:'#strengths',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,anticipatePin:1,invalidateOnRefresh:true}});
+    gsap.from('#strengths .card',{y:46,autoAlpha:0,stagger:0.08,ease:'power3.out',
+      scrollTrigger:{trigger:'#strengths',start:'top 78%'}});
   }
-  /* 5) Опыт — карточки въезжают с масштабом */
+
+  /* 7) Опыт — карточки въезжают со сторон + масштаб */
   gsap.utils.toArray('#experience .exp-item').forEach((it,i)=>{
-    gsap.from(it,{xPercent:(i%2?14:-14),opacity:0,scale:0.94,ease:'power3.out',
-      scrollTrigger:{trigger:it,start:'top 88%',end:'top 54%',scrub:true}});
+    gsap.from(it,{xPercent:(i%2?15:-15),opacity:0,scale:0.95,ease:'power3.out',
+      scrollTrigger:{trigger:it,start:'top 90%',end:'top 56%',scrub:true}});
   });
-  /* 6) AI — 3D-каскад */
-  gsap.from('#ai .card',{yPercent:46,opacity:0,rotateY:12,transformPerspective:900,stagger:0.1,ease:'power3.out',
-    scrollTrigger:{trigger:'#ai .grid-3',start:'top 85%',end:'top 40%',scrub:true}});
-  /* 7) Образование — масштаб-reveal */
-  gsap.from('#education .edu',{scale:0.82,opacity:0,ease:'power3.out',
-    scrollTrigger:{trigger:'#education .edu',start:'top 90%',end:'top 54%',scrub:true}});
-  /* 8) Контакты — подъём */
-  gsap.from('.footer-inner>*',{yPercent:26,opacity:0,stagger:0.1,ease:'power3.out',
-    scrollTrigger:{trigger:'.footer-inner',start:'top 90%',end:'top 58%',scrub:true}});
+
+  /* 8) AI — 3D-каскад */
+  gsap.from('#ai .card',{yPercent:52,opacity:0,rotateY:13,transformPerspective:1000,stagger:0.1,ease:'power3.out',
+    scrollTrigger:{trigger:'#ai .grid-3',start:'top 86%',end:'top 42%',scrub:true}});
+
+  /* 9) Образование — масштаб-reveal с блюром */
+  gsap.from('#education .edu',{scale:0.82,autoAlpha:0,filter:'blur(6px)',ease:'power3.out',
+    scrollTrigger:{trigger:'#education .edu',start:'top 90%',end:'top 56%',scrub:true}});
+
+  /* 10) Контакты — подъём */
+  gsap.from('.footer-inner>*',{yPercent:28,opacity:0,stagger:0.1,ease:'power3.out',
+    scrollTrigger:{trigger:'.footer-inner',start:'top 90%',end:'top 60%',scrub:true}});
+
   ScrollTrigger.refresh();
 })();
 </script>
