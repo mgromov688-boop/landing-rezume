@@ -172,6 +172,12 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 
 /* portrait — premium floating panel */
 .photo-stage{perspective:1100px;display:flex;justify-content:center}
+/* AI-узлы — реалистичный элемент героя, чисто слит с off-white; край «появляется» */
+.ai-hero{position:relative;width:100%;max-width:480px;transform-style:preserve-3d;transition:transform .3s ease;will-change:transform}
+.ai-hero img{display:block;width:100%;height:auto;
+  animation:aiReveal 1.35s .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes aiReveal{0%{clip-path:inset(0 0 100% 0);opacity:0}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.ai-hero img{animation:none}}
 .photo-card{position:relative;width:100%;max-width:400px;border-radius:var(--radius-mock);
   transform-style:preserve-3d;transition:transform .25s ease;will-change:transform}
 .photo-card .frame{position:relative;z-index:1;border-radius:var(--radius-mock);overflow:hidden;
@@ -239,9 +245,10 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .icon-tile{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin-bottom:22px;
   background:linear-gradient(150deg,#fff,var(--surface-2));border:1px solid var(--border-subtle);
   box-shadow:var(--shadow-sm),inset 0 1px #fff;transition:transform .28s,background .28s,border-color .28s,box-shadow .28s}
-.icon-tile svg{width:23px;height:23px;color:var(--accent-strong);stroke-width:2.1;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .25s}
+.icon-tile svg{width:23px;height:23px;color:var(--text-primary);stroke-width:1.9;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .25s}
 .card:hover .icon-tile,.edu:hover .icon-tile{transform:translateY(-2px);border-color:var(--accent-line);
   background:linear-gradient(150deg,#fff,var(--accent-soft));box-shadow:var(--shadow-md),inset 0 1px #fff}
+.card:hover .icon-tile svg,.edu:hover .icon-tile svg{color:var(--accent-strong)}
 
 /* ============ EXPERIENCE ============ */
 .exp{max-width:var(--maxw-text);margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -416,14 +423,8 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
         </div>
       </div>
       <div class="photo-stage">
-        <div class="photo-card" id="photoCard">
-          <div class="frame">
-            <img src="photo.png" alt="Максим Лисевский" />
-            <div class="photo-plate">
-              <div class="pn">Максим Лисевский</div>
-              <div class="pr">Sales · AI</div>
-            </div>
-          </div>
+        <div class="ai-hero" id="photoCard">
+          <img src="assets/ai-node.png" alt="AI-инфраструктура — нейросеть узлов" />
         </div>
       </div>
     </div>
