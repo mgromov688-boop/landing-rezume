@@ -159,6 +159,15 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center}
 .hero h1{font-family:var(--font-display);margin:18px 0 0;line-height:1.04}
 .hero h1 .h1-role{display:block;font-weight:600;font-size:clamp(15px,1.7vw,19px);color:var(--accent-strong);letter-spacing:0.01em;margin-bottom:12px;text-transform:none}
+/* премиум-аватар слева сверху (фото в кадре) */
+.hero-avatar{width:80px;height:80px;border-radius:50%;overflow:hidden;margin-bottom:24px;
+  border:1px solid var(--border-subtle);background:var(--surface);
+  box-shadow:0 1px 2px rgba(26,23,20,.05),0 14px 30px rgba(26,23,20,.08);
+  position:relative}
+.hero-avatar::after{content:"";position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--bg-base);box-shadow:0 0 0 1px var(--accent-line)}
+.hero-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+.hero .lead b{color:var(--accent-strong);font-weight:700}
 .hero h1 .h1-main{display:block;font-weight:800;font-size:clamp(40px,5.4vw,68px);letter-spacing:var(--tracking-display);color:var(--text-primary)}
 .hero .lead{max-width:560px;font-size:16.5px;margin-top:24px;color:var(--text-secondary)}
 .hero-cta{display:flex;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
@@ -173,11 +182,13 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 /* portrait — premium floating panel */
 .photo-stage{perspective:1100px;display:flex;justify-content:center}
 /* AI-узлы — реалистичный элемент героя, чисто слит с off-white; край «появляется» */
-.ai-hero{position:relative;width:100%;max-width:480px;transform-style:preserve-3d;transition:transform .3s ease;will-change:transform}
+.ai-hero{position:relative;width:100%;max-width:520px;will-change:transform;
+  animation:aiFloat 6.5s ease-in-out infinite}
+@keyframes aiFloat{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
 .ai-hero img{display:block;width:100%;height:auto;
   animation:aiReveal 1.35s .4s cubic-bezier(.2,.7,.2,1) both}
 @keyframes aiReveal{0%{clip-path:inset(0 0 100% 0);opacity:0}100%{clip-path:inset(0 0 0 0);opacity:1}}
-@media (prefers-reduced-motion:reduce){.ai-hero img{animation:none}}
+@media (prefers-reduced-motion:reduce){.ai-hero,.ai-hero img{animation:none}}
 .photo-card{position:relative;width:100%;max-width:400px;border-radius:var(--radius-mock);
   transform-style:preserve-3d;transition:transform .25s ease;will-change:transform}
 .photo-card .frame{position:relative;z-index:1;border-radius:var(--radius-mock);overflow:hidden;
@@ -239,9 +250,11 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 
 /* ============ FEATURE GRID ============ */
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:var(--maxw-mid);margin:0 auto}
-.card{padding:32px}
+.card{padding:30px 28px 26px;display:flex;flex-direction:column;min-height:230px}
 .card h3{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.01em;margin-bottom:10px;color:var(--text-primary)}
-.card p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.card p{font-size:14px;color:var(--text-muted);line-height:1.6;flex:1}
+.card .card-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-subtle);font-size:11.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.card .card-meta .mk{color:var(--accent-strong)}
 .icon-tile{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin-bottom:22px;
   background:linear-gradient(150deg,#fff,var(--surface-2));border:1px solid var(--border-subtle);
   box-shadow:var(--shadow-sm),inset 0 1px #fff;transition:transform .28s,background .28s,border-color .28s,box-shadow .28s}
@@ -403,9 +416,10 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
   <div class="wrap">
     <div class="hero-grid">
       <div class="hero-text">
+        <div class="hero-avatar"><img src="photo.png" alt="Максим Лисевский" /></div>
         <span class="eyebrow">Онлайн-образование · Маркетплейсы WB / OZON</span>
         <h1><span class="h1-role">Руководитель отдела продаж</span><span class="h1-main">Senior Manager</span></h1>
-        <p class="lead">Sales и операционный руководитель в онлайн-образовании и на маркетплейсах WB и OZON. Когда РОП уходит — беру отдел на себя: план, выручка и команда остаются на месте. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
+        <p class="lead">Когда РОП уходит — <b>беру отдел на себя</b>. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
         <div class="hero-cta">
           <a class="btn btn-primary magnetic" href="mailto:mgromov688@gmail.com">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -501,31 +515,37 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
         <div class="icon-tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
         <h3>Закрытие в одно касание</h3>
         <p>Клиент доходит до оплаты за первый контакт, без растянутого дожима. Основная отличительная черта.</p>
+        <div class="card-meta"><span>Sales</span><span class="mk">01</span></div>
       </div>
       <div class="card panel">
         <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
         <h3>Короткий цикл сделки</h3>
         <p>Работаю без входящих заявок — на холодном и тёплом трафике, с быстрым выходом на оплату.</p>
+        <div class="card-meta"><span>Pipeline</span><span class="mk">02</span></div>
       </div>
       <div class="card panel">
         <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
         <h3>Продажи в Zoom</h3>
         <p>Большой опыт продающих и презентационных встреч: выявление потребности и доведение до решения онлайн.</p>
+        <div class="card-meta"><span>Online</span><span class="mk">03</span></div>
       </div>
       <div class="card panel">
         <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         <h3>Замещение РОПа · тим-лид</h3>
         <p>На постоянной основе беру управление: удержание плана и выручки, целевые действия команды, адаптация менеджеров.</p>
+        <div class="card-meta"><span>Lead</span><span class="mk">04</span></div>
       </div>
       <div class="card panel">
         <div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16l4-5 4 3 5-7"/></svg></div>
         <h3>Аналитика воронки и amoCRM</h3>
         <p>Веду отдел по цифрам: вижу, где теряются деньги и где точки роста, и перевожу это в решения.</p>
+        <div class="card-meta"><span>Analytics</span><span class="mk">05</span></div>
       </div>
       <div class="card panel">
         <div class="icon-tile"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
         <h3>Таблицы и отчётность через AI</h3>
         <p>Строю и настраиваю аналитические таблицы и логику расчётов с помощью AI — корректно под реальные процессы.</p>
+        <div class="card-meta"><span>AI Ops</span><span class="mk">06</span></div>
       </div>
     </div>
   </div>
@@ -736,7 +756,7 @@ const cio=new IntersectionObserver((es)=>{es.forEach(e=>{
 document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
 
 /* ===== Portrait tilt ===== */
-const card=document.getElementById('photoCard');
+const card=null; /* tilt disabled for ai-hero, левитация в CSS */
 if(card&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&matchMedia('(min-width:981px)').matches){
   const stage=card.parentElement;
   stage.addEventListener('pointermove',e=>{
