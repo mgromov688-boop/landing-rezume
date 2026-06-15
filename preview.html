@@ -159,14 +159,14 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center}
 .hero h1{font-family:var(--font-display);margin:18px 0 0;line-height:1.04}
 .hero h1 .h1-role{display:block;font-weight:600;font-size:clamp(15px,1.7vw,19px);color:var(--accent-strong);letter-spacing:0.01em;margin-bottom:12px;text-transform:none}
-/* премиум-аватар слева сверху (фото в кадре) */
-.hero-avatar{width:80px;height:80px;border-radius:50%;overflow:hidden;margin-bottom:24px;
-  border:1px solid var(--border-subtle);background:var(--surface);
-  box-shadow:0 1px 2px rgba(26,23,20,.05),0 14px 30px rgba(26,23,20,.08);
-  position:relative}
-.hero-avatar::after{content:"";position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;
-  background:var(--accent);border:3px solid var(--bg-base);box-shadow:0 0 0 1px var(--accent-line)}
+/* премиум-аватар слева сверху (фото в кадре, заметный) */
+.hero-avatar{width:clamp(140px,12vw,176px);aspect-ratio:1/1;border-radius:50%;overflow:visible;margin-bottom:28px;
+  position:relative;display:inline-block}
+.hero-avatar .av-frame{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface);
+  border:1px solid var(--border-subtle);box-shadow:0 2px 6px rgba(26,23,20,.06),0 22px 50px rgba(26,23,20,.15)}
 .hero-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+.hero-avatar::after{content:"";position:absolute;right:4px;bottom:4px;width:24px;height:24px;border-radius:50%;
+  background:var(--accent);border:4px solid var(--bg-base);box-shadow:0 0 0 1px var(--accent-line)}
 .hero .lead b{color:var(--accent-strong);font-weight:700}
 .hero h1 .h1-main{display:block;font-weight:800;font-size:clamp(40px,5.4vw,68px);letter-spacing:var(--tracking-display);color:var(--text-primary)}
 .hero .lead{max-width:560px;font-size:16.5px;margin-top:24px;color:var(--text-secondary)}
@@ -182,13 +182,12 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 /* portrait — premium floating panel */
 .photo-stage{perspective:1100px;display:flex;justify-content:center}
 /* AI-узлы — реалистичный элемент героя, чисто слит с off-white; край «появляется» */
-.ai-hero{position:relative;width:100%;max-width:520px;will-change:transform;
-  animation:aiFloat 6.5s ease-in-out infinite}
-@keyframes aiFloat{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
-.ai-hero img{display:block;width:100%;height:auto;
-  animation:aiReveal 1.35s .4s cubic-bezier(.2,.7,.2,1) both}
-@keyframes aiReveal{0%{clip-path:inset(0 0 100% 0);opacity:0}100%{clip-path:inset(0 0 0 0);opacity:1}}
-@media (prefers-reduced-motion:reduce){.ai-hero,.ai-hero img{animation:none}}
+.ai-hero{position:relative;width:100%;max-width:520px;overflow:visible}
+.ai-hero img{display:block;width:100%;height:auto;will-change:transform;
+  animation:aiReveal 1.35s .4s cubic-bezier(.2,.7,.2,1) both, aiFloat 6.5s 1.8s ease-in-out infinite}
+@keyframes aiReveal{0%{opacity:0;transform:translateY(28px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes aiFloat{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){.ai-hero img{animation:none}}
 .photo-card{position:relative;width:100%;max-width:400px;border-radius:var(--radius-mock);
   transform-style:preserve-3d;transition:transform .25s ease;will-change:transform}
 .photo-card .frame{position:relative;z-index:1;border-radius:var(--radius-mock);overflow:hidden;
@@ -416,7 +415,7 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
   <div class="wrap">
     <div class="hero-grid">
       <div class="hero-text">
-        <div class="hero-avatar"><img src="photo.png" alt="Максим Лисевский" /></div>
+        <div class="hero-avatar"><div class="av-frame"><img src="photo.png" alt="Максим Лисевский" /></div></div>
         <span class="eyebrow">Онлайн-образование · Маркетплейсы WB / OZON</span>
         <h1><span class="h1-role">Руководитель отдела продаж</span><span class="h1-main">Senior Manager</span></h1>
         <p class="lead">Когда РОП уходит — <b>беру отдел на себя</b>. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
