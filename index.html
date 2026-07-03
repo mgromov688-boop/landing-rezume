@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Максим Лисевский — Руководитель отдела продаж</title>
-<meta name="description" content="Максим Лисевский — руководитель отдела продаж и Sales Manager. Закрытие сделок в одно касание, аналитика на цифрах, собственная AI-инфраструктура." />
+<title>Максим Лисевский — Sales Manager · менеджер по продажам</title>
+<meta name="description" content="Максим Лисевский — Sales Manager, менеджер по продажам (и.о. РОП). Закрытие сделок в одно касание, аналитика на цифрах, собственная AI-инфраструктура." />
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@5/index.css" />
@@ -412,10 +412,7 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 html.gsap .reveal,html.gsap .stagger>*{opacity:1;transform:none;filter:none;transition:none}
 .wmask{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em}
 .wmask .winner{display:inline-block;will-change:transform}
-html.gsap #strengths{overflow:hidden}
-html.gsap #strengths .wrap{max-width:none}
-html.gsap #strengths .grid-3{display:flex;flex-wrap:nowrap;max-width:none;margin:0;gap:24px;align-items:stretch}
-html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
+/* strengths: спокойная вертикальная сетка (без pin/горизонтали) */
 
 /* ============ PREMIUM TOUCHES ============ */
 /* построчный выезд из-под маски */
@@ -507,7 +504,7 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
       <div class="hero-text">
         <div class="hero-avatar"><div class="av-frame"><img src="photo.png" alt="Максим Лисевский" /></div></div>
         <span class="eyebrow">Онлайн-образование · Маркетплейсы WB / OZON</span>
-        <h1><span class="h1-role">Руководитель отдела продаж</span><span class="h1-main">Sales Manager</span></h1>
+        <h1><span class="h1-role">Менеджер по продажам · и.о. РОП</span><span class="h1-main">Sales Manager</span></h1>
         <p class="lead">Когда РОП уходит — <b>беру отдел на себя</b>. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
         <div class="hero-cta">
           <a class="btn btn-primary magnetic" href="mailto:mgromov688@gmail.com">
@@ -833,7 +830,7 @@ html.gsap #strengths .card{flex:0 0 clamp(300px,26vw,360px)}
           Telegram: @Maximpact888
         </a>
       </div>
-      <div class="copyright">Максим Лисевский · Руководитель отдела продаж и Sales Manager</div>
+      <div class="copyright">Максим Лисевский · Sales Manager · менеджер по продажам</div>
     </div>
   </div>
 </footer>
@@ -984,25 +981,19 @@ map.forEach(x=>sio.observe(x.sec));
   gsap.from('#metrics .dash > .panel',{y:42,autoAlpha:0,stagger:0.1,duration:0.7,ease:'power3.out',
     scrollTrigger:{trigger:'#metrics .dash',start:'top 85%'}});
 
-  /* 6) Сильные стороны — горизонтальный pinned-дек (фирменный wow) + приход карточек */
-  const track=document.querySelector('#strengths .grid-3');
-  if(track){
-    const dist=()=>Math.max(0,track.scrollWidth-window.innerWidth*0.82);
-    gsap.to(track,{x:()=>-dist(),ease:'none',
-      scrollTrigger:{trigger:'#strengths',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,anticipatePin:1,invalidateOnRefresh:true}});
-    gsap.from('#strengths .card',{y:46,autoAlpha:0,stagger:0.08,ease:'power3.out',
-      scrollTrigger:{trigger:'#strengths',start:'top 78%'}});
-  }
+  /* 6) Сильные стороны — спокойный приход карточек (без pin/горизонтали) */
+  gsap.from('#strengths .card',{y:40,autoAlpha:0,stagger:0.08,duration:0.7,ease:'power3.out',
+    scrollTrigger:{trigger:'#strengths .grid-3',start:'top 82%'}});
 
-  /* 7) Опыт — карточки въезжают со сторон + масштаб */
-  gsap.utils.toArray('#experience .exp-item').forEach((it,i)=>{
-    gsap.from(it,{xPercent:(i%2?15:-15),opacity:0,scale:0.95,ease:'power3.out',
-      scrollTrigger:{trigger:it,start:'top 90%',end:'top 56%',scrub:true}});
+  /* 7) Опыт — спокойный подъём карточек */
+  gsap.utils.toArray('#experience .exp-item').forEach((it)=>{
+    gsap.from(it,{y:38,autoAlpha:0,duration:0.7,ease:'power3.out',
+      scrollTrigger:{trigger:it,start:'top 86%'}});
   });
 
-  /* 8) AI — 3D-каскад */
-  gsap.from('#ai .card',{yPercent:52,opacity:0,rotateY:13,transformPerspective:1000,stagger:0.1,ease:'power3.out',
-    scrollTrigger:{trigger:'#ai .grid-3',start:'top 86%',end:'top 42%',scrub:true}});
+  /* 8) AI — спокойный приход карточек (без 3D-разворота) */
+  gsap.from('#ai .card',{y:40,autoAlpha:0,stagger:0.09,duration:0.7,ease:'power3.out',
+    scrollTrigger:{trigger:'#ai .grid-3',start:'top 84%'}});
 
   /* 9) Образование — масштаб-reveal с блюром */
   gsap.from('#education .edu',{scale:0.82,autoAlpha:0,filter:'blur(6px)',ease:'power3.out',
