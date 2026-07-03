@@ -194,21 +194,26 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .hero .lead{max-width:560px;font-size:16.5px;margin-top:24px;color:var(--text-secondary)}
 .hero-cta{display:flex;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
 .hero-tags{display:flex;gap:10px;margin-top:38px;flex-wrap:wrap}
-.tag{font-size:12px;font-weight:600;color:var(--text-primary);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-pill);padding:9px 15px;background:var(--sp-surface);box-shadow:var(--shadow-soft-sm);
-  display:inline-flex;align-items:center;gap:8px;transition:border-color .25s,box-shadow .25s,transform .2s}
-.tag:hover{border-color:var(--accent-line);box-shadow:var(--glow-gold);transform:translateY(-2px)}
+.tag{font-size:12.5px;font-weight:600;color:var(--text-primary);border:1px solid rgba(255,255,255,.7);
+  border-radius:var(--radius-pill);padding:12px 18px;background:var(--sp-surface);
+  box-shadow:7px 7px 16px var(--neu-d),-6px -6px 13px var(--neu-l),inset 0 1px 0 rgba(255,255,255,.85);
+  display:inline-flex;align-items:center;gap:9px;transition:border-color .25s,box-shadow .25s,transform .2s}
+.tag:hover{border-color:var(--accent-line);box-shadow:var(--shadow-soft-sm),var(--glow-gold);transform:translateY(-2px)}
 .tag b{color:var(--accent-strong);font-weight:700}
-.tag .tdot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.tag .tdot{width:7px;height:7px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 35% 30%,#F3C87E,var(--accent));
+  box-shadow:0 0 0 3px var(--accent-soft),0 0 10px 2px rgba(226,150,55,.55);animation:dotGlow 2.6s ease-in-out infinite}
+@keyframes dotGlow{0%,100%{box-shadow:0 0 0 3px var(--accent-soft),0 0 8px 1px rgba(226,150,55,.4)}
+  50%{box-shadow:0 0 0 3px var(--accent-soft),0 0 16px 4px rgba(226,150,55,.75)}}
 
 /* portrait — premium floating panel */
 .photo-stage{perspective:1100px;display:flex;justify-content:center}
 /* AI-узлы — реалистичный элемент героя, чисто слит с off-white; край «появляется» */
 /* reveal на КОНТЕЙНЕРЕ (opacity), levitation на КАРТИНКЕ (translateY) — разные слои, без конфликта transform */
 .ai-hero{position:relative;width:100%;max-width:520px;overflow:visible;
-  opacity:0;animation:aiReveal 1.1s .4s ease-out forwards}
-.ai-hero img{display:block;width:100%;height:auto;will-change:transform;backface-visibility:hidden;transform:translateZ(0);
-  animation:aiFloat 7s ease-in-out infinite}
+  opacity:0;animation:aiReveal 1.1s .4s ease-out forwards,aiFloat 8s ease-in-out 1.6s infinite}
+.ai-hero img{display:block;width:100%;height:auto;will-change:transform;backface-visibility:hidden;transform:translateZ(0)}
+.ai-hero canvas.ai-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes aiReveal{to{opacity:1}}
 @keyframes aiFloat{0%,100%{transform:translate3d(0,-12px,0)}50%{transform:translate3d(0,12px,0)}}
 @media (prefers-reduced-motion:reduce){.ai-hero,.ai-hero img{animation:none;opacity:1}}
@@ -331,15 +336,23 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .card p{font-size:14px;color:var(--text-muted);line-height:1.6;flex:1}
 .card .card-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-subtle);font-size:11.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
 .card .card-meta .mk{color:var(--accent-strong)}
-.icon-tile{width:56px;height:56px;border-radius:17px;display:grid;place-items:center;margin-bottom:22px;position:relative;
-  background:var(--sp-surface);border:1px solid rgba(255,255,255,.6);
-  box-shadow:var(--shadow-soft-sm);
-  transition:transform .28s,box-shadow .28s,border-color .28s}
-.icon-tile::before{content:"";position:absolute;inset:7px;border-radius:11px;border:1px solid var(--border-subtle);opacity:.55;transition:border-color .28s,opacity .28s}
-.icon-tile svg{position:relative;z-index:1;width:23px;height:23px;color:var(--text-secondary);stroke-width:1.7;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .25s}
-.card:hover .icon-tile,.edu:hover .icon-tile{transform:translateY(-3px);border-color:var(--accent-line);
-  box-shadow:var(--shadow-soft-sm),var(--glow-warm-sm)}
-.card:hover .icon-tile::before,.edu:hover .icon-tile::before{border-color:var(--accent-line);opacity:.95}
+.icon-tile{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;margin-bottom:24px;position:relative;
+  background:var(--sp-surface);border:1px solid rgba(255,255,255,.75);
+  box-shadow:7px 7px 18px var(--neu-d),-6px -6px 14px var(--neu-l),inset 0 1px 0 rgba(255,255,255,.9);
+  transition:transform .3s,box-shadow .3s,border-color .3s}
+/* орбитальная дуга (референс «Modern infographic») */
+.icon-tile::before{content:"";position:absolute;inset:-7px;border-radius:50%;
+  border:1.5px solid var(--accent-line);border-right-color:transparent;border-bottom-color:transparent;
+  opacity:.55;transition:opacity .3s;animation:orbit 9s linear infinite}
+.icon-tile::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;top:-4px;left:50%;margin-left:-3px;
+  background:radial-gradient(circle at 35% 30%,#F3C87E,var(--accent));box-shadow:0 0 8px 1px rgba(226,150,55,.6);
+  opacity:0;transition:opacity .3s}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.icon-tile svg{position:relative;z-index:1;width:25px;height:25px;color:var(--text-secondary);stroke-width:1.7;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .25s}
+.card:hover .icon-tile,.edu:hover .icon-tile{transform:translateY(-3px) scale(1.04);border-color:var(--accent-line);
+  box-shadow:7px 7px 18px var(--neu-d),-6px -6px 14px var(--neu-l),var(--glow-warm-sm)}
+.card:hover .icon-tile::before,.edu:hover .icon-tile::before{opacity:1;border-right-color:var(--accent-line)}
+.card:hover .icon-tile::after,.edu:hover .icon-tile::after{opacity:1}
 .card:hover .icon-tile svg,.edu:hover .icon-tile svg{color:var(--accent-strong)}
 
 /* ============ EXPERIENCE ============ */
@@ -401,7 +414,8 @@ nav.scrolled{padding:13px 40px;background:rgba(244,241,234,0.82);backdrop-filter
 .stagger.in>*:nth-child(6){transition-delay:.35s}
 @media (prefers-reduced-motion:reduce){
   .reveal,.stagger>*{opacity:1!important;transform:none!important;filter:none!important;transition:none}
-  .marquee-track,.scrolldown .mouse::after,.brand .dot::after{animation:none}
+  .marquee-track,.scrolldown .mouse::after,.brand .dot::after,.icon-tile::before,.tag .tdot{animation:none}
+  .ai-hero canvas.ai-fx{display:none}
   .js .dash-bars .dash-bar .col{transform:scaleY(var(--h,1))}
   .js .ring-wrap .ring-fill{stroke-dashoffset:var(--target)}
   .js .share .share-fill{width:var(--w)}
@@ -524,7 +538,7 @@ html.gsap .reveal,html.gsap .stagger>*{opacity:1;transform:none;filter:none;tran
       </div>
       <div class="photo-stage">
         <div class="ai-hero" id="photoCard">
-          <img src="assets/ai-face.png" alt="AI-инфраструктура — нейросеть узлов" />
+          <img src="assets/ai-node.png" alt="AI-инфраструктура — нейросеть узлов" />
         </div>
       </div>
     </div>
@@ -1004,6 +1018,75 @@ map.forEach(x=>sio.observe(x.sec));
     scrollTrigger:{trigger:'.footer-inner',start:'top 90%',end:'top 60%',scrub:true}});
 
   ScrollTrigger.refresh();
+})();
+</script>
+
+<script>
+/* ===== AI-рендер: распад на частицы при скролле (десктоп) ===== */
+(function(){
+  const wrap=document.querySelector('.ai-hero');
+  const img=wrap&&wrap.querySelector('img');
+  if(!img) return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  if(!matchMedia('(min-width:768px)').matches) return;
+  const cv=document.createElement('canvas'); cv.className='ai-fx';
+  const ctx=cv.getContext('2d');
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  let parts=[],W=0,H=0,ready=false,prog=0,raf=0;
+  function build(){
+    const r=img.getBoundingClientRect(); W=r.width; H=r.height;
+    if(!W||!H||!img.naturalWidth) return false;
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const sw=Math.min(210,Math.round(W)), sh=Math.max(1,Math.round(sw*(H/W)));
+    const off=document.createElement('canvas'); off.width=sw; off.height=sh;
+    const octx=off.getContext('2d'); octx.drawImage(img,0,0,sw,sh);
+    let d; try{ d=octx.getImageData(0,0,sw,sh).data; }catch(e){ return false; }
+    parts=[]; const step=2;
+    for(let y=0;y<sh;y+=step)for(let x=0;x<sw;x+=step){
+      const i=(y*sw+x)*4, a=d[i+3], dark=255-(d[i]+d[i+1]+d[i+2])/3;
+      if(a>40&&dark>62){
+        const px=x/sw*W, py=y/sh*H, bias=px/W;
+        parts.push({x:px,y:py,bias:bias,
+          vx:(18+bias*46)*(0.6+Math.random()*0.8),
+          vy:(-8+(Math.random()-0.5)*26),
+          r:dark>150?1.5:1.05});
+      }
+    }
+    ready=parts.length>0; return ready;
+  }
+  function draw(){
+    raf=0; if(!ready) return;
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#1A1714';
+    const p=prog;
+    for(let k=0;k<parts.length;k++){
+      const pt=parts[k];
+      // правый край распадается первым
+      const local=Math.max(0,Math.min(1,(p-(1-pt.bias)*0.28)/0.72));
+      if(local<=0) continue;
+      const e=local*local;
+      const dx=pt.vx*e*2.2, dy=pt.vy*e*2.2-e*36;
+      const al=Math.min(1,local*3.2)*(1-local*0.92);
+      if(al<=0.02) continue;
+      ctx.globalAlpha=al;
+      ctx.beginPath(); ctx.arc(pt.x+dx,pt.y+dy,pt.r,0,6.283); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  function onScroll(){
+    if(!ready) return;
+    const vh=window.innerHeight;
+    prog=Math.max(0,Math.min(1,(window.scrollY||window.pageYOffset||0)/(vh*0.72)));
+    img.style.opacity=String(Math.max(0,1-prog*1.25));
+    if(!raf) raf=requestAnimationFrame(draw);
+  }
+  function init(){
+    if(!build()) return;
+    wrap.appendChild(cv); onScroll();
+    addEventListener('scroll',onScroll,{passive:true});
+    let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{ready=false;if(build())onScroll();},180);});
+  }
+  if(img.complete&&img.naturalWidth) init(); else img.addEventListener('load',init);
 })();
 </script>
 
