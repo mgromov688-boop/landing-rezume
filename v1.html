@@ -87,7 +87,8 @@ body::after{content:'';position:fixed;inset:0;z-index:90;pointer-events:none;opa
 h1{font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.035em;font-weight:600}
 .h1-top{color:#f2f4f7}
 .h1-chrome{background:linear-gradient(110deg,#f5f7fa 8%,#c7ccd4 34%,#8e96a3 52%,#eef1f5 74%,#a6adb8 94%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.h1-chrome .word{background:linear-gradient(110deg,#f5f7fa 8%,#c7ccd4 34%,#8e96a3 52%,#eef1f5 74%,#a6adb8 94%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h1-chrome .word{background:linear-gradient(110deg,#f5f7fa 8%,#c7ccd4 34%,#8e96a3 52%,#eef1f5 74%,#a6adb8 94%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.24em;margin-bottom:-.24em}
+.h1-chrome{padding-bottom:.12em;margin-bottom:-.12em}
 .word{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(28px) scale(.92)}
 .word.on{animation:wordAppear .8s var(--ease) forwards}
 @keyframes wordAppear{0%{opacity:0;transform:translateY(28px) scale(.92);filter:blur(10px)}55%{opacity:.85;transform:translateY(8px) scale(.97);filter:blur(2px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
