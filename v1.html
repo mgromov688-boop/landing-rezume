@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Максим Лисевский — Руководитель отдела продаж · Senior Manager</title>
-<meta name="description" content="Руководитель отдела продаж и Senior Manager. Когда РОП уходит — беру отдел на себя. Продажи, выстроенные на цифрах, и собственная AI-инфраструктура.">
+<title>Максим Лисевский — Руководитель отдела продаж · Sales Manager</title>
+<meta name="description" content="Руководитель отдела продаж и Sales Manager. Когда РОП уходит — беру отдел на себя. Продажи, выстроенные на цифрах, и собственная AI-инфраструктура.">
 <meta property="og:title" content="Максим Лисевский — Руководитель отдела продаж">
 <meta property="og:description" content="Продажи, выстроенные на цифрах, и собственная AI-инфраструктура под рукой.">
 <meta property="og:type" content="website">
@@ -21,6 +21,7 @@
   --border:rgba(174,181,192,.14); --border-strong:rgba(174,181,192,.26);
   --text:#e8eaee; --text-soft:#c2c7cf; --muted:#9aa1ab; --dim:#5d646e;
   --chrome-a:#f5f7fa; --chrome-b:#c7ccd4; --chrome-c:#8e96a3;
+  --ice:#5B8CFF; --lav:#8B7CF6; --ice-glow:rgba(91,140,255,.14); --lav-glow:rgba(139,124,246,.35);
   --ease:cubic-bezier(.16,1,.3,1);
   --r-sm:8px; --r-md:12px; --r-lg:16px;
 }
@@ -79,7 +80,7 @@ body::after{content:'';position:fixed;inset:0;z-index:90;pointer-events:none;opa
 
 .hero-inner{position:relative;z-index:3;text-align:center;max-width:780px;padding:120px 24px 90px}
 .avatar{width:104px;height:104px;border-radius:50%;margin:0 auto 26px;position:relative;opacity:0;animation:wordIn .9s .15s var(--ease) forwards}
-.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;filter:grayscale(1) contrast(1.06) brightness(1.02)}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;filter:contrast(1.04) saturate(1.05)}
 .avatar::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 140deg,var(--chrome-a),var(--chrome-c) 30%,#3a4048 55%,var(--chrome-b) 80%,var(--chrome-a));z-index:-1}
 .avatar::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:.5px solid rgba(199,204,212,.18)}
 .eyebrow{display:inline-block;font-size:11.5px;letter-spacing:2.6px;text-transform:uppercase;color:#aeb5c0;border:.5px solid rgba(174,181,192,.32);border-radius:100px;padding:7px 18px;margin-bottom:26px;background:rgba(232,235,240,.05);backdrop-filter:blur(6px);opacity:0;animation:wordIn .8s .3s var(--ease) forwards}
@@ -108,7 +109,7 @@ h1{font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.035em;font-w
 @keyframes hintDrop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
 /* mouse gradient */
-#mouseGlow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:1;opacity:0;background:radial-gradient(circle,rgba(199,204,212,.07),rgba(154,161,171,.04) 40%,transparent 70%);transform:translate(-50%,-50%);transition:opacity .4s ease}
+#mouseGlow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:1;opacity:0;background:radial-gradient(circle,rgba(120,150,255,.06),rgba(154,161,171,.04) 40%,transparent 70%);transform:translate(-50%,-50%);transition:opacity .4s ease}
 
 /* ============ MARQUEE ============ */
 .marquee{position:relative;padding:22px 0;border-top:.5px solid var(--border);border-bottom:.5px solid var(--border);background:var(--bg);overflow:hidden}
@@ -125,8 +126,11 @@ h1{font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.035em;font-w
 section{position:relative}
 .sec{padding:120px 0}
 .sec-label{font-size:11px;letter-spacing:2.8px;text-transform:uppercase;color:#aeb5c0;margin-bottom:14px;display:flex;align-items:center;gap:12px}
-.sec-label::before{content:'';width:26px;height:1px;background:linear-gradient(90deg,var(--chrome-b),transparent)}
+.sec-label::before{content:'';width:26px;height:1px;background:linear-gradient(90deg,var(--ice),transparent)}
 .sec-title{font-size:clamp(30px,4.4vw,52px);line-height:1.06;letter-spacing:-.03em;font-weight:600;color:#f2f4f7;margin-bottom:18px}
+.sec-title.rv{transform:translateY(20px)}
+.sec-title.rv.inview{animation:titleWipe 1.05s var(--ease) both}
+@keyframes titleWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -4% 0 0)}}
 .sec-sub{font-size:15.5px;color:var(--muted);max-width:640px}
 
 /* statement */
@@ -138,6 +142,9 @@ section{position:relative}
 
 /* metrics */
 .metrics-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:48px}
+.spot{position:relative;overflow:hidden}
+.spot::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(120,150,255,.10),transparent 65%)}
+.spot:hover::after{opacity:1}
 .m-card{position:relative;overflow:hidden;background:var(--card);border:.5px solid var(--border);border-radius:var(--r-lg);padding:28px;transition:border-color .25s ease,transform .25s var(--ease)}
 .m-card:hover{border-color:var(--border-strong);transform:translateY(-3px)}
 .m-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,204,212,.4),transparent);opacity:0;transition:opacity .3s}
@@ -146,7 +153,8 @@ section{position:relative}
 .m-small{grid-column:span 5}
 .m-half{grid-column:span 6}
 .m-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
-.m-value{font-size:clamp(34px,4vw,52px);font-weight:600;letter-spacing:-.03em;line-height:1;background:linear-gradient(110deg,var(--chrome-a) 20%,var(--chrome-b) 60%,var(--chrome-c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.m-value{font-size:clamp(34px,4vw,52px);font-weight:600;letter-spacing:-.03em;line-height:1;background:linear-gradient(110deg,#f5f7fa 12%,#cdd8f0 55%,#8fa8d8);-webkit-background-clip:text;background-clip:text;color:transparent;filter:blur(9px);opacity:0;transition:filter 1s var(--ease),opacity 1s var(--ease)}
+.m-card.armed .m-value{filter:blur(0);opacity:1}
 .m-value small{font-size:.55em;font-weight:500}
 .m-note{margin-top:12px;font-size:13.5px;color:var(--muted)}
 .m-bars{display:flex;gap:14px;align-items:stretch;height:96px;margin-top:22px}
@@ -162,7 +170,9 @@ section{position:relative}
 .s-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--r-lg);padding:28px;transition:border-color .25s,transform .25s var(--ease),background .25s}
 .s-card:hover{border-color:var(--border-strong);background:var(--card-hover);transform:translateY(-4px)}
 .s-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(232,235,240,.06);border:.5px solid var(--border);margin-bottom:18px}
-.s-icon svg{width:20px;height:20px;stroke:#c7ccd4;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.s-icon svg{width:20px;height:20px;stroke:#c7ccd4;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s}
+.s-card:hover .s-icon{border-color:rgba(91,140,255,.4)}
+.s-card:hover .s-icon svg{stroke:#8fa8d8}
 .s-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .s-card h3{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;color:#eef1f5}
 .s-card p{font-size:13.5px;line-height:1.55;color:var(--muted)}
@@ -185,7 +195,7 @@ section{position:relative}
 .xp-item li b{color:var(--text-soft);font-weight:500}
 .xp-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 .xp-stat{background:rgba(232,235,240,.05);border:.5px solid var(--border);border-radius:var(--r-md);padding:12px 18px}
-.xp-stat b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em;background:linear-gradient(110deg,var(--chrome-a),var(--chrome-c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.xp-stat b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em;background:linear-gradient(110deg,#f5f7fa,#a9bce4);-webkit-background-clip:text;background-clip:text;color:transparent}
 .xp-stat span{font-size:11.5px;color:var(--dim)}
 .xp-note{margin-top:14px;font-size:12.5px;color:var(--dim);font-style:italic}
 
@@ -212,6 +222,8 @@ section{position:relative}
 .contact{position:relative;overflow:hidden;padding:150px 0 130px;text-align:center;background:var(--bg-deep)}
 .beams{position:absolute;inset:0;pointer-events:none}
 .beams i{position:absolute;bottom:-40%;width:1px;height:60%;background:linear-gradient(180deg,transparent,rgba(199,204,212,.5),transparent);opacity:0;animation:beamRise 5.5s ease-in-out infinite}
+.beams i:nth-child(2n){background:linear-gradient(180deg,transparent,var(--lav-glow),transparent)}
+.beams i:nth-child(3){background:linear-gradient(180deg,transparent,rgba(91,140,255,.4),transparent)}
 @keyframes beamRise{0%{transform:translateY(30%);opacity:0}25%{opacity:.55}55%{opacity:.25}100%{transform:translateY(-130%);opacity:0}}
 .contact .sec-title{font-size:clamp(34px,5vw,62px)}
 .contact .sec-sub{margin:0 auto}
@@ -297,7 +309,7 @@ footer{border-top:.5px solid var(--border);padding:30px 0;background:var(--bg-de
     <p class="eyebrow">Онлайн-образование · Маркетплейсы</p>
     <h1>
       <span class="h1-top" data-words>Руководитель отдела продаж</span><br>
-      <span class="h1-chrome" data-words data-delay="700">Senior Manager</span>
+      <span class="h1-chrome" data-words data-delay="700">Sales Manager</span>
     </h1>
     <p class="lead">Когда РОП уходит — <b>беру отдел на себя</b>. Параллельно строю собственную AI-инфраструктуру и завожу её прямо в продажи.</p>
     <div class="hero-cta">
@@ -541,7 +553,7 @@ footer{border-top:.5px solid var(--border);padding:30px 0;background:var(--bg-de
 
 <footer>
   <div class="wrap foot">
-    <p>Максим Лисевский · Руководитель отдела продаж и Senior Manager</p>
+    <p>Максим Лисевский · Руководитель отдела продаж и Sales Manager</p>
     <nav aria-label="Навигация в подвале">
       <a href="#experience">Опыт</a><a href="#metrics">Результаты</a><a href="#ai">AI</a><a href="#contact">Контакт</a>
     </nav>
@@ -584,42 +596,62 @@ window.addEventListener('DOMContentLoaded', () => {
   const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   const counters = document.querySelectorAll('[data-count]');
 
-  /* ---- IntersectionObserver reveals (bulletproof: works with any scroll source) ---- */
+  /* ---- scroll-sweep reveals: direct rect checks, immune to any scroll source ---- */
   const STAG = ['cards-6','bento','metrics-grid','xp'];
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const el = e.target;
-    io.unobserve(el);
-    const par = el.parentElement;
-    const stag = par && STAG.some(c => par.classList.contains(c));
-    const idx = stag ? [...par.children].indexOf(el) : 0;
-    setTimeout(() => {
-      el.classList.add('inview');
-      setTimeout(() => el.classList.remove('rv', 'inview'), 1100);
-    }, idx * 85);
-  }), { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
-  document.querySelectorAll('.rv').forEach(el => io.observe(el));
-
-  /* bars + timeline line keep their own inview flag */
-  const ioKeep = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('armed');
-    ioKeep.unobserve(e.target);
-  }), { threshold: 0.3 });
-  document.querySelectorAll('.m-card, .xp').forEach(el => ioKeep.observe(el));
-
-  const io2 = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const el = e.target, target = +el.dataset.count, t0 = performance.now(), D = 1600;
+  const runCounter = el => {
+    const target = +el.dataset.count, t0 = performance.now(), D = 1600;
     const tick = t => {
       const p = Math.min((t - t0) / D, 1), ease = 1 - Math.pow(1 - p, 4);
       el.textContent = fmt(target * ease);
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    io2.unobserve(el);
-  }), { threshold: 0.6 });
-  counters.forEach(c => io2.observe(c));
+    setTimeout(() => { el.textContent = fmt(target); }, D + 300); /* bg-tab rAF freeze guard */
+  };
+  const sweep = () => {
+    const vh = innerHeight;
+    document.querySelectorAll('.rv:not(.inview)').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top > vh * 0.92 || r.bottom < 0) return;
+      const par = el.parentElement;
+      const stag = par && STAG.some(c => par.classList.contains(c));
+      const idx = stag ? [...par.children].filter(s => s.classList.contains('rv')).indexOf(el) : 0;
+      el.classList.add('inview');
+      el.style.transitionDelay = (idx * 85) + 'ms';
+      setTimeout(() => { el.classList.remove('rv', 'inview'); el.style.transitionDelay = ''; }, 1300 + idx * 85);
+    });
+    document.querySelectorAll('.m-card:not(.armed), .xp:not(.armed)').forEach(el => {
+      if (el.getBoundingClientRect().top < vh * 0.78) {
+        el.classList.add('armed');
+        el.querySelectorAll('[data-count]').forEach(runCounter);
+      }
+    });
+  };
+  let sweepTick = 0;
+  const onScroll = () => {
+    const now = performance.now();
+    if (now - sweepTick < 70) return;
+    sweepTick = now;
+    sweep();
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  setInterval(sweep, 700); /* safety net for smooth-scroll libs & anchor jumps */
+  window.__sweep = sweep;
+  sweep();
+
+  /* ---- card spotlight (desktop only) ---- */
+  if (fine) {
+    const cards = document.querySelectorAll('.s-card,.b-card,.m-card,.edu-card');
+    cards.forEach(c => c.classList.add('spot'));
+    document.addEventListener('mousemove', e => {
+      const el = e.target.closest('.spot');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+  }
 
   /* ---- mouse glow (desktop only) ---- */
   const glow = document.getElementById('mouseGlow');
@@ -661,7 +693,7 @@ window.addEventListener('DOMContentLoaded', () => {
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
     });
     gsap.to('.hero-metal-css, .hero-shader', {
-      scale: 1.12, ease: 'none',
+      scale: 1.14, rotation: 3, ease: 'none',
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
     });
 
@@ -717,7 +749,7 @@ window.addEventListener('DOMContentLoaded', () => {
         u_worldWidth: 0, u_worldHeight: 0
       };
       try {
-        new m.ShaderMount(host, m.liquidMetalFragmentShader, u, undefined, 0.55);
+        new m.ShaderMount(host, m.liquidMetalFragmentShader, u, undefined, 0.55, 0, 1, 1600 * 900);
         document.querySelector('.hero').classList.add('blend');
         host.style.opacity = '0';
         host.style.transition = 'opacity 1.6s ease';
